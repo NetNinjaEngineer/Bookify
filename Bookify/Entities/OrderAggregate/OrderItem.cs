@@ -2,8 +2,6 @@
 
 public class OrderItem : BaseEntity
 {
-    public int ProductId { get; set; }
-    public string ProductName { get; set; }
-    public string PictureUrl { get; set; }
+    public ProductItemOrdered ProductItemOrdered { get; set; }
     public decimal Price { get; set; }
 }
