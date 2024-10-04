@@ -1,0 +1,10 @@
+﻿@model BookForListVM
+@inject IConfiguration configuration
+
+@{
+    var imagesPath = configuration["ImagesPath"];
+}
+
+<div>
+    <img src="@imagesPath/@Model.ImageName" alt="@Model.Title" />
+</div>
