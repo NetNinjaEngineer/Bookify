@@ -1,4 +1,4 @@
-﻿namespace Bookify.Views.ViewModels;
+﻿namespace Bookify.ViewModels;
 
 public class AuthorVM
 {

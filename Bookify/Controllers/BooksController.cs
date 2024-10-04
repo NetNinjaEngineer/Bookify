@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Bookify.Entities;
 using Bookify.Repository.Contracts;
+using Bookify.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bookify.Controllers;
@@ -25,7 +26,18 @@ public class BooksController : Controller
     public async Task<IActionResult> Index()
     {
         var allBooks = await _bookRepository.GetAllAsync();
-        return View(allBooks);
+        var mappedBooks = _mapper.Map<IEnumerable<BookForListVM>>(allBooks);
+        return View(mappedBooks);
+    }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        var existedBook = await _bookRepository.GetByIdAsync(id);
+        if (existedBook == null)
+            return NotFound();
+
+        var mappedBook = _mapper.Map<BookForListVM>(existedBook);
+        return View(mappedBook);
     }
 
 

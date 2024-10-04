@@ -1,10 +1,17 @@
 ﻿@model BookForListVM
-@inject IConfiguration configuration
 
 @{
-    var imagesPath = configuration["ImagesPath"];
+    ViewData["Title"] = "Details";
 }
 
-<div>
-    <img src="@imagesPath/@Model.ImageName" alt="@Model.Title" />
+<div class="card Model-card mb-4">
+    <img src="@Model.PictureUrl" class="card-img-top" alt="@Model.Title">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Title</h5>
+        <p class="card-text text-muted">@Model.Author - @Model.Genre</p>
+        <p class="card-description">@Model.Description</p>
+        <div class="price-section">
+            <span class="Model-price">@Model.Price.ToString("C")</span>
+        </div>
+    </div>
 </div>

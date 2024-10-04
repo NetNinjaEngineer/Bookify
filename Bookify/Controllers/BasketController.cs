@@ -4,10 +4,10 @@ using Bookify.Repository.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bookify.Controllers;
-[Route("api/[controller]")]
-[ApiController]
-public class BasketController : ControllerBase
+
+public class BasketController : Controller
 {
+    private readonly string _basketId = "CUS_BA0111";
     private readonly IBasketRepository _basketRepository;
 
     public BasketController(IBasketRepository basketRepository)
@@ -15,58 +15,78 @@ public class BasketController : ControllerBase
         _basketRepository = basketRepository;
     }
 
-    [HttpPost("addToBasket/{basketId}")]
-    public async Task<IActionResult> AddItemToCustomerBasket(string basketId, [FromBody] BasketItem basketItem)
+    public async Task<IActionResult> Index()
     {
-        var updatedCustomerBasket = await _basketRepository.AddItemToBasketAsync(basketId, basketItem);
-        if (updatedCustomerBasket != null)
-            return Ok(updatedCustomerBasket);
-        return BadRequest("Failed");
+        var customerBasket = await _basketRepository.GetBasketAsync(_basketId);
+        if (customerBasket == null)
+            return View("EmptyBasket");
+
+        return View(customerBasket);
     }
 
-    [HttpGet("{basketId}")]
-    public async Task<IActionResult> GetCustomerBasket(string basketId)
+    [HttpPost("addToBasket")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddToBasket([FromForm] BasketItem basketItem)
     {
-        var customerBasket = await _basketRepository.GetBasketAsync(basketId);
-        return Ok(customerBasket);
+        var updatedCustomerBasket = await _basketRepository.AddItemToBasketAsync(_basketId, basketItem);
+        if (updatedCustomerBasket == null)
+        {
+            TempData["Error"] = "Failed to add item to the basket.";
+            return RedirectToAction("Index");
+        }
+
+        return RedirectToAction("Index");
     }
 
-    [HttpDelete("{basketId}")]
-    public async Task<IActionResult> DeleteCustomerBasket(string basketId)
-    {
-        await _basketRepository.DeleteBaskeyAsync(basketId);
-        return NoContent();
-    }
-
-    [HttpPut("{basketId}")]
-    public async Task<IActionResult> UpdateItemQuantityInBasket(string basketId, int itemId, int quantity)
+    [HttpPost("removeItem")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveItem(int itemId)
     {
         try
         {
-            var updatedCustomerBasket = await _basketRepository.UpdateItemQuantityInBasketAsync(basketId, itemId, quantity);
+            var updatedCustomerBasket = await _basketRepository.RemoveItemFromBasketAsync(_basketId, itemId);
             if (updatedCustomerBasket == null)
-                return BadRequest("No Basket Available");
-            return Ok(updatedCustomerBasket);
+            {
+                TempData["Error"] = "No available basket.";
+                return RedirectToAction("Index");
+            }
+
+            return RedirectToAction("Index");
         }
         catch (BasketItemNotFoundException ex)
         {
-            return NotFound(ex.Message);
+            TempData["Error"] = ex.Message;
+            return RedirectToAction("Index");
         }
     }
 
-    [HttpDelete("removeItem/{basketId}")]
-    public async Task<IActionResult> RemoveItemFromBasket(string basketId, int itemId)
+    [HttpPost("updateQuantity")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UpdateQuantity(int itemId, int quantity)
     {
         try
         {
-            var updatedCustomerBasket = await _basketRepository.RemoveItemFromBasketAsync(basketId, itemId);
+            var updatedCustomerBasket = await _basketRepository.UpdateItemQuantityInBasketAsync(_basketId, itemId, quantity);
             if (updatedCustomerBasket == null)
-                return BadRequest("No Available basket.");
-            return Ok(updatedCustomerBasket);
+            {
+                TempData["Error"] = "No basket available.";
+                return RedirectToAction("Index");
+            }
+
+            return RedirectToAction("Index");
         }
         catch (BasketItemNotFoundException ex)
         {
-            return NotFound(ex.Message);
+            TempData["Error"] = ex.Message;
+            return RedirectToAction("Index");
         }
+    }
+
+    [HttpPost("clearBasket")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ClearBasket()
+    {
+        await _basketRepository.DeleteBaskeyAsync(_basketId);
+        return RedirectToAction("Index");
     }
 }

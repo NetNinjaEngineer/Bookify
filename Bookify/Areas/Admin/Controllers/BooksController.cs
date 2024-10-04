@@ -2,7 +2,7 @@
 using Bookify.Entities;
 using Bookify.Helpers;
 using Bookify.Repository.Contracts;
-using Bookify.Views.ViewModels;
+using Bookify.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bookify.Areas.Admin.Controllers;

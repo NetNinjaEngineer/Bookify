@@ -1,0 +1,35 @@
+﻿.book-card {
+    width: 100%;
+    max-width: 300px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-img-top {
+    height: 250px;
+    object-fit: cover;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.card-body {
+    padding: 1.25rem;
+}
+
+.card-description {
+    font-size: 0.9rem;
+    color: #555;
+    height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.price-section {
+    margin: 1rem 0;
+}
+
+.book-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #28a745;
+}

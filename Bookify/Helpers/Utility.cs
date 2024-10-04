@@ -7,7 +7,6 @@ public static class Utility
         // Get located folder path
         string folderPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot\\Files", folderName);
         // Get filename and make it unique
-        // ssssssssssssssssimage.png
         string fileName = $"{DateTime.Now:ddMMyyyy}{Guid.NewGuid()}{file.FileName}";
         // Get file path
         string filePath = Path.Combine(folderPath, fileName);
