@@ -1,10 +1,11 @@
 ﻿using Bookify.Entities;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookify.Data;
 
 public class ApplicationDbContext(
-    DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+    DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<User>(options)
 {
     public DbSet<Genre> Genres { get; set; }
     public DbSet<Book> Books { get; set; }
