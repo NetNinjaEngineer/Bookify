@@ -68,6 +68,7 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
 
         builder.Property(x => x.CustomerEmail)
             .HasColumnType("varchar")
+            .HasMaxLength(255)
             .IsRequired();
 
         builder.HasOne(x => x.DeliveryMethod)

@@ -8,7 +8,7 @@ using Stripe.Checkout;
 namespace Bookify.Controllers;
 
 [Authorize]
-[Route("api/checkout")]
+[Route("checkout")]
 public class CheckoutController : Controller
 {
     private readonly IOrderService _orderService;
@@ -34,12 +34,12 @@ public class CheckoutController : Controller
     public async Task<IActionResult> Checkout(int orderId)
     {
         var customerOrder = await _orderService.GetUserOrderAsync(_customerEmail, orderId);
+        ViewBag.CustomerOrderId = customerOrder!.Id;
         return View(customerOrder);
     }
 
     [HttpPost("create-checkout-session")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateCheckoutSession(int orderId)
+    public async Task<IActionResult> CreateCheckoutSession([FromQuery] int orderId)
     {
         try
         {
@@ -55,13 +55,13 @@ public class CheckoutController : Controller
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        Currency = "egy",
+                        Currency = "usd",
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
                             Name = item.ProductItemOrdered.ProductName,
                             Images = [item.ProductItemOrdered.PictureUrl!]
                         },
-                        UnitAmount = (long)(item.UnitPrice),
+                        UnitAmount = (long)(item.UnitPrice * 100),
                     },
                     Quantity = item.Quantity,
                 }).ToList();
@@ -77,13 +77,13 @@ public class CheckoutController : Controller
             {
                 PriceData = new SessionLineItemPriceDataOptions
                 {
-                    Currency = "egy",
+                    Currency = "usd",
                     ProductData = new SessionLineItemPriceDataProductDataOptions
                     {
                         Name = selectedUserDeliveryMethod.Title,
                         Description = "Delivery charges"
                     },
-                    UnitAmount = (long)(selectedUserDeliveryMethod.Cost),
+                    UnitAmount = (long)(selectedUserDeliveryMethod.Cost * 100),
                 },
                 Quantity = 1,
             });

@@ -2,47 +2,38 @@
 
 @{
     ViewData["Title"] = "Check Out";
+    var customerOrderId = (int)ViewBag.CustomerOrderId;
 }
 
 
-<button id="checkOut" class="btn btn-primary">Checkout</button>
+<button id="checkoutButton" class="btn btn-primary">Checkout</button>
 
 @section Scripts {
     <script src="https://js.stripe.com/v3/"></script>
     <script>
 
+      document.getElementById('checkoutButton').addEventListener('click', function () {
+        const orderId = @customerOrderId;
         const baseUrl = '@configuration["BaseUrl"]';
-        const publishableKey = '@configuration["StripeKeys:Publishablekey"]';
 
-        async function proceedToCheckout() {
-            const response = await fetch(`${baseUrl}/api/checkout/create-checkout-session`, {
-                method: 'POST'
-            });
-
-            if (response.ok) {
-                const { sessionId } = await response.json();
-                const stripe = Stripe(publishableKey);
-                const response = await stripe.redirectToCheckout({ sessionId });
-
-                console.log(response);
-
-                // if (error) {
-                //     console.error(error.message);
-                //     alert('Failed to redirect to checkout.');
-                // }
-            } else {
-                // const error = await response.json();
-                // console.error(error);
-                // alert(error.error || 'Failed to create checkout session.');
+        fetch(`${baseUrl}/checkout/create-checkout-session?orderId=${orderId}`, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json'
             }
-        }
-
-        document.getElementById('checkOut', function () {
-            proceedToCheckout();
-        });
-
-
-
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.sessionId) {
+                 const stripe = Stripe("@configuration["StripeKeys:Publishablekey"]");
+                const sessionId = data.sessionId;
+                stripe.redirectToCheckout({ sessionId });
+            } else {
+                alert('Failed to create checkout session');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
 
     </script>
 }

@@ -70,9 +70,9 @@ public class OrderService : IOrderService
 
             productsTotal += product.Price * basketItem.Quantity;
 
-            product.StockQuantity -= basketItem.Quantity;
+            //product.StockQuantity -= basketItem.Quantity;
 
-            _bookRepository.Update(product);
+            //_bookRepository.Update(product);
 
         }
 
