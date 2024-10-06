@@ -3,6 +3,7 @@ using Bookify.Entities;
 using Bookify.Entities.OrderAggregate;
 using Bookify.Repository.Contracts;
 using Bookify.Services.Contracts;
+using Bookify.Specifications;
 using Bookify.ViewModels;
 
 namespace Bookify.Services;
@@ -98,16 +99,20 @@ public class OrderService : IOrderService
 
     public async Task<Order?> GetUserOrderAsync(string customerEmail, int orderId)
     {
-        var allOrders = await _orderRepository.GetAllAsync();
+        //var allOrders = await _orderRepository.GetAllAsync(); // without specification
+        var specification = new GetAllOrdersWithOrderItemsSpecification();
+        var allOrders = await _orderRepository.GetAllWithSpecificationAsync(specification);
         var userOrder = allOrders.FirstOrDefault(order =>
             order.CustomerEmail == customerEmail && order.Id == orderId);
         return userOrder;
     }
 
-    public async Task<IEnumerable<Order>> GetUserOrdersAsync(string customerEmail, int orderId)
+    public async Task<IEnumerable<Order>> GetUserOrdersAsync(string customerEmail)
     {
-        var allOrders = await _orderRepository.GetAllAsync();
-        var userOrders = allOrders.Where(order => order.CustomerEmail == customerEmail && order.Id == orderId);
+        //var allOrders = await _orderRepository.GetAllAsync(); // without specification
+        var specification = new GetAllOrdersWithOrderItemsSpecification();
+        var allOrders = await _orderRepository.GetAllWithSpecificationAsync(specification);
+        var userOrders = allOrders.Where(order => order.CustomerEmail == customerEmail);
         return userOrders;
     }
 }

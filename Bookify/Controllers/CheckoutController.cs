@@ -90,11 +90,11 @@ public class CheckoutController : Controller
 
             var options = new SessionCreateOptions
             {
-                PaymentMethodTypes = new List<string> { "card" },
+                PaymentMethodTypes = ["card"],
                 LineItems = lineItems,
                 Mode = "payment",
-                SuccessUrl = $"{domain}/success?session_id={{CHECKOUT_SESSION_ID}}",
-                CancelUrl = $"{domain}/cancel",
+                SuccessUrl = $"{domain}/Checkout/Success?session_id={{CHECKOUT_SESSION_ID}}",
+                CancelUrl = $"{domain}/Checkout/Cancel",
                 Metadata = new Dictionary<string, string>
                 {
                     { "OrderId", customerOrder.Id.ToString() }
@@ -110,5 +110,10 @@ public class CheckoutController : Controller
         {
             return BadRequest(ex.Message);
         }
+    }
+
+    public IActionResult Success(string session_id)
+    {
+        return View();
     }
 }

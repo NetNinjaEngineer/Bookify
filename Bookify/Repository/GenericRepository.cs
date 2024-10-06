@@ -1,6 +1,7 @@
 ﻿using Bookify.Data;
 using Bookify.Entities;
 using Bookify.Repository.Contracts;
+using Bookify.Specifications;
 using Microsoft.EntityFrameworkCore;
 
 namespace Bookify.Repository;
@@ -22,6 +23,10 @@ public class GenericRepository<TEntity>(
 
     public async Task<IEnumerable<TEntity>> GetAllAsync()
         => await context.Set<TEntity>().ToListAsync();
+
+    public async Task<IEnumerable<TEntity>> GetAllWithSpecificationAsync(IBaseSpecification<TEntity> specification)
+        => await SpecificationQueryEvaluator.BuildQuery(context.Set<TEntity>(), specification).ToListAsync();
+
 
     public async Task<TEntity> GetByIdAsync(int id)
         => await context.Set<TEntity>().FindAsync(id);
