@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241006104734_CreateOrderEntities")]
+    [Migration("20241006110640_CreateOrderEntities")]
     partial class CreateOrderEntities
     {
         /// <inheritdoc />
@@ -509,7 +509,7 @@ namespace Bookify.Migrations
 
             modelBuilder.Entity("Bookify.Entities.OrderAggregate.OrderItem", b =>
                 {
-                    b.HasOne("Bookify.Entities.OrderAggregate.Order", "Order")
+                    b.HasOne("Bookify.Entities.OrderAggregate.Order", null)
                         .WithMany("OrderItems")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -541,8 +541,6 @@ namespace Bookify.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("OrderItemId");
                         });
-
-                    b.Navigation("Order");
 
                     b.Navigation("ProductItemOrdered")
                         .IsRequired();

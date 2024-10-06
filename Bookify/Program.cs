@@ -20,10 +20,6 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(options =>
     return ConnectionMultiplexer.Connect(connection!);
 });
 
-builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
-
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -48,6 +44,12 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Account/Login";
         options.LogoutPath = "/Account/Logout";
     });
+
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
+
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 
 var app = builder.Build();

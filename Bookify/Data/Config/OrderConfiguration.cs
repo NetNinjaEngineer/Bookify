@@ -76,6 +76,13 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
 
+
+        builder.HasMany(x => x.OrderItems)
+            .WithOne()
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
+
+
         builder.ToTable("Orders");
     }
 }

@@ -8,12 +8,6 @@ public class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
 {
     public void Configure(EntityTypeBuilder<OrderItem> builder)
     {
-        builder.HasOne(x => x.Order)
-            .WithMany(x => x.OrderItems)
-            .HasForeignKey(x => x.OrderId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .IsRequired();
-
         builder.OwnsOne(x => x.ProductItemOrdered, options =>
         {
             options.Property(x => x.PictureUrl)

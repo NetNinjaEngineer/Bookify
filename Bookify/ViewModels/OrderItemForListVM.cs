@@ -1,11 +1,12 @@
-﻿namespace Bookify.Entities.OrderAggregate;
+﻿using Bookify.Entities.OrderAggregate;
 
-public class OrderItem : BaseEntity
+namespace Bookify.ViewModels;
+
+public class OrderItemForListVM
 {
     public int Quantity { get; set; }
 
     public decimal UnitPrice { get; set; }
 
     public ProductItemOrdered ProductItemOrdered { get; set; } = null!;
-
 }

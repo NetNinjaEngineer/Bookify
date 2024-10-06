@@ -16,7 +16,7 @@ public class Order : BaseEntity
 
     public DateTime UpdatedAt { get; set; }
 
-    public int TotalAmount { get; set; }
+    public decimal TotalAmount { get; set; }
 
     public ICollection<OrderItem> OrderItems { get; set; } = [];
 
