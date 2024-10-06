@@ -1,5 +1,6 @@
 using Bookify.Data;
 using Bookify.Entities;
+using Bookify.Helpers;
 using Bookify.Repository;
 using Bookify.Repository.Contracts;
 using Bookify.Services;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
+using Stripe;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -53,6 +55,11 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 
+var stripeKeys = new StripeKeys();
+builder.Configuration.Bind(nameof(StripeKeys), stripeKeys);
+
+StripeConfiguration.ApiKey = stripeKeys.SecretKey;
+
 
 var app = builder.Build();
 
@@ -68,7 +75,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-//app.UseStatusCodePagesWithReExecute("/Home/Error404");
+app.UseStatusCodePagesWithReExecute("/Home/Error404");
 
 app.UseStaticFiles();
 

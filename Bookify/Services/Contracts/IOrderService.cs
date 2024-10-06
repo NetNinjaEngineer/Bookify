@@ -8,4 +8,5 @@ public interface IOrderService
     Task<Order> CreateOrderAsync(CreateOrderRequestVM request);
     Task<IEnumerable<Order>> GetAllOrdersAsync();
     Task<IEnumerable<Order>> GetUserOrdersAsync(string customerEmail, int orderId);
+    Task<Order?> GetUserOrderAsync(string customerEmail, int orderId);
 }

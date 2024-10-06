@@ -96,6 +96,14 @@ public class OrderService : IOrderService
     public async Task<IEnumerable<Order>> GetAllOrdersAsync()
         => await _orderRepository.GetAllAsync();
 
+    public async Task<Order?> GetUserOrderAsync(string customerEmail, int orderId)
+    {
+        var allOrders = await _orderRepository.GetAllAsync();
+        var userOrder = allOrders.FirstOrDefault(order =>
+            order.CustomerEmail == customerEmail && order.Id == orderId);
+        return userOrder;
+    }
+
     public async Task<IEnumerable<Order>> GetUserOrdersAsync(string customerEmail, int orderId)
     {
         var allOrders = await _orderRepository.GetAllAsync();

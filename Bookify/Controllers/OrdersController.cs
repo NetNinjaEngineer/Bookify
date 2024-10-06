@@ -2,10 +2,13 @@
 using Bookify.Repository.Contracts;
 using Bookify.Services.Contracts;
 using Bookify.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Bookify.Controllers;
+
+[Authorize]
 public class OrdersController : Controller
 {
     private readonly IOrderService _orderService;
@@ -48,6 +51,11 @@ public class OrdersController : Controller
 
         var createdOrder = await _orderService.CreateOrderAsync(createOrderRequestVM);
 
-        return View();
+        if (createdOrder == null)
+            return BadRequest("Unable to Create Order.");
+
+        // order is created
+
+        return RedirectToAction("Checkout", "Checkout", new { orderId = createdOrder.Id });
     }
 }

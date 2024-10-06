@@ -1,0 +1,48 @@
+﻿@inject IConfiguration configuration
+
+@{
+    ViewData["Title"] = "Check Out";
+}
+
+
+<button id="checkOut" class="btn btn-primary">Checkout</button>
+
+@section Scripts {
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+
+        const baseUrl = '@configuration["BaseUrl"]';
+        const publishableKey = '@configuration["StripeKeys:Publishablekey"]';
+
+        async function proceedToCheckout() {
+            const response = await fetch(`${baseUrl}/api/checkout/create-checkout-session`, {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                const { sessionId } = await response.json();
+                const stripe = Stripe(publishableKey);
+                const response = await stripe.redirectToCheckout({ sessionId });
+
+                console.log(response);
+
+                // if (error) {
+                //     console.error(error.message);
+                //     alert('Failed to redirect to checkout.');
+                // }
+            } else {
+                // const error = await response.json();
+                // console.error(error);
+                // alert(error.error || 'Failed to create checkout session.');
+            }
+        }
+
+        document.getElementById('checkOut', function () {
+            proceedToCheckout();
+        });
+
+
+
+
+    </script>
+}
