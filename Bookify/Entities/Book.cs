@@ -10,4 +10,5 @@ public class Book : BaseEntity
     public Genre? Genre { get; set; }
     public int? AuthorId { get; set; }
     public Author? Author { get; set; }
+    public int StockQuantity { get; set; }
 }

@@ -2,6 +2,8 @@ using Bookify.Data;
 using Bookify.Entities;
 using Bookify.Repository;
 using Bookify.Repository.Contracts;
+using Bookify.Services;
+using Bookify.Services.Contracts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +20,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(options =>
     return ConnectionMultiplexer.Connect(connection!);
 });
 
-builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
