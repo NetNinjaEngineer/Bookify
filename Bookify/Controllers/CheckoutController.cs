@@ -93,7 +93,7 @@ public class CheckoutController : Controller
                 PaymentMethodTypes = ["card"],
                 LineItems = lineItems,
                 Mode = "payment",
-                SuccessUrl = $"{domain}/Checkout/Success?session_id={{CHECKOUT_SESSION_ID}}",
+                SuccessUrl = $"{domain}/checkout/success?session_id={{CHECKOUT_SESSION_ID}}",
                 CancelUrl = $"{domain}/Checkout/Cancel",
                 Metadata = new Dictionary<string, string>
                 {
@@ -112,7 +112,8 @@ public class CheckoutController : Controller
         }
     }
 
-    public IActionResult Success(string session_id)
+    [HttpGet("success")]
+    public IActionResult Success([FromQuery] string session_id)
     {
         return View();
     }
