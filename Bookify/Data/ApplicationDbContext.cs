@@ -1,4 +1,5 @@
 ﻿using Bookify.Entities;
+using Bookify.Entities.OrderAggregate;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,10 @@ public class ApplicationDbContext(
     public DbSet<Book> Books { get; set; }
     public DbSet<Author> Authors { get; set; }
     public DbSet<Return> Returns { get; set; }
+    public DbSet<DeliveryMethod> DeliveryMethods { get; set; }
+    public DbSet<OrderItem> OrderItems { get; set; }
+    public DbSet<Order> Orders { get; set; }
+
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
