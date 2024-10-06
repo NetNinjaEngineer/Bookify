@@ -82,6 +82,10 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
             .OnDelete(DeleteBehavior.Restrict)
             .IsRequired();
 
+        builder.Property(x => x.TotalAmount)
+            .HasColumnType("decimal(18, 2)")
+            .IsRequired();
+
 
         builder.ToTable("Orders");
     }

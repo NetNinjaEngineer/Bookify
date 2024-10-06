@@ -51,6 +51,8 @@ builder.Services.AddScoped<IShoppingCartService, ShoppingCartService>();
 
 builder.Services.AddScoped<IOrderService, OrderService>();
 
+builder.Services.AddScoped<IUserService, UserService>();
+
 
 var app = builder.Build();
 
@@ -66,11 +68,13 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseStatusCodePagesWithReExecute("/Home/Error404");
+//app.UseStatusCodePagesWithReExecute("/Home/Error404");
 
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

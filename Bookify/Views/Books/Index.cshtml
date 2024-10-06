@@ -20,12 +20,9 @@
                         <div class="price-section">
                             <span class="book-price">@book.Price.ToString("C")</span>
                         </div>
-                        <form asp-action="AddToBasket" asp-controller="Basket" method="post">
-                            <input type="hidden" name="Id" value="@book.Id" />
-                            <input type="hidden" name="Name" value="@book.Title" />
-                            <input type="hidden" name="PictureUrl" value="@book.PictureUrl" />
-                            <input type="hidden" name="Price" value="@book.Price" />
-                            <input type="hidden" name="Quantity" value="1" />
+                        <form asp-action="AddToBasket" asp-controller="ShoppingCart" method="post">
+                            <input type="hidden" name="productId" value="@book.Id" />
+                            <input type="hidden" name="quantity" value="1" />
                             <button type="submit" class="btn btn-primary">Add to Basket</button>
                         </form>
                     </div>
