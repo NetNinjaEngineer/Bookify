@@ -14,19 +14,22 @@ public class OrderService : IOrderService
     private readonly IGenericRepository<Book> _bookRepository;
     private readonly IMapper _mapper;
     private readonly IGenericRepository<Order> _orderRepository;
+    private readonly IUserService _userService;
 
     public OrderService(
         IGenericRepository<DeliveryMethod> deliveryMethodRepository,
         IShoppingCartService shoppingCartService,
         IGenericRepository<Book> bookRepository,
         IMapper mapper,
-        IGenericRepository<Order> orderRepository)
+        IGenericRepository<Order> orderRepository,
+        IUserService userService)
     {
         _deliveryMethodRepository = deliveryMethodRepository;
         _shoppingCartService = shoppingCartService;
         _bookRepository = bookRepository;
         _mapper = mapper;
         _orderRepository = orderRepository;
+        _userService = userService;
     }
 
     public async Task<Order> CreateOrderAsync(CreateOrderRequestVM request)
@@ -76,7 +79,7 @@ public class OrderService : IOrderService
 
         var order = new Order
         {
-            CustomerEmail = request.CustomerEmail,
+            CustomerEmail = _userService.UserEmail,
             CreatedAt = DateTime.UtcNow,
             DeliveryMethodId = deliveryMethod.Id,
             OrderItems = orderItems,

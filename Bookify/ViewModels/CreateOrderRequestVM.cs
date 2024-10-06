@@ -6,10 +6,6 @@ namespace Bookify.ViewModels;
 public class CreateOrderRequestVM
 {
     [Required]
-    [EmailAddress]
-    public string CustomerEmail { get; set; } = string.Empty;
-
-    [Required]
     public int DeliveryMethodId { get; set; }
 
     [Required]

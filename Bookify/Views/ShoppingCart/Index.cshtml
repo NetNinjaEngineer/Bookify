@@ -84,7 +84,7 @@
                              </strong>
                          </p>
 
-                         <a href="/Checkout" class="btn btn-success btn-block mt-3">Proceed to Checkout</a>
+                        <a asp-action="PlaceOrder" asp-controller="Orders" asp-route-shoppingCartId="@Model.BasketId" class="btn btn-success btn-block mt-3">Place Order</a>
 
                          <form asp-action="ClearBasket" method="post" class="mt-2">
                              <input type="hidden" name="basketId" value="@Model.BasketId" />

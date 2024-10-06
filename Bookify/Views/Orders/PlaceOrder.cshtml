@@ -1,0 +1,74 @@
+﻿@model CreateOrderRequestVM
+
+@{
+    ViewData["Title"] = "Shipping Address Form";
+    var shoppingCartId = ViewBag.ShoppingCartId;
+    var deliveryMethods = ViewBag.DeliveryMethods;
+}
+
+<h2>Shipping Address</h2>
+
+<form asp-action="Create" method="post">
+    <input type="hidden" name="ShoppingCartId" value="@shoppingCartId" />
+
+    <div class="form-group">
+        <label asp-for="@Model.ShippingAddress.FirstName" class="control-label"></label>
+        <input asp-for="@Model.ShippingAddress.FirstName" class="form-control" />
+        <span asp-validation-for="@Model.ShippingAddress.FirstName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.ShippingAddress.LastName" class="control-label"></label>
+        <input asp-for="@Model.ShippingAddress.LastName" class="form-control" />
+        <span asp-validation-for="@Model.ShippingAddress.LastName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.ShippingAddress.ShippingAddressLine1" class="control-label"></label>
+        <input asp-for="@Model.ShippingAddress.ShippingAddressLine1" class="form-control" />
+        <span asp-validation-for="@Model.ShippingAddress.ShippingAddressLine1" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.ShippingAddress.ShippingAddressLine2" class="control-label"></label>
+        <input asp-for="@Model.ShippingAddress.ShippingAddressLine2" class="form-control" />
+        <span asp-validation-for="@Model.ShippingAddress.ShippingAddressLine2" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.ShippingAddress.ShippingCity" class="control-label"></label>
+        <input asp-for="@Model.ShippingAddress.ShippingCity" class="form-control" />
+        <span asp-validation-for="@Model.ShippingAddress.ShippingCity" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.ShippingAddress.ShippingState" class="control-label"></label>
+        <input asp-for="@Model.ShippingAddress.ShippingState" class="form-control" />
+        <span asp-validation-for="@Model.ShippingAddress.ShippingState" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.ShippingAddress.ShippingPostalCode" class="control-label"></label>
+        <input asp-for="@Model.ShippingAddress.ShippingPostalCode" class="form-control" />
+        <span asp-validation-for="@Model.ShippingAddress.ShippingPostalCode" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="@Model.ShippingAddress.ShippingCountry" class="control-label"></label>
+        <input asp-for="@Model.ShippingAddress.ShippingCountry" class="form-control" />
+        <span asp-validation-for="@Model.ShippingAddress.ShippingCountry" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label class="control-label" for="deliveryMethod">Delivery Method</label>
+        <select class="form-control" id="deliveryMethod" asp-items="@deliveryMethods" asp-for="@Model.DeliveryMethodId">
+            <option value="@null">------ select delivery method ------</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Place Order</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
