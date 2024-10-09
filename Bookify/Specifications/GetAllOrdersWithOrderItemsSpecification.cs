@@ -4,8 +4,9 @@ namespace Bookify.Specifications;
 
 public class GetAllOrdersWithOrderItemsSpecification : BaseSpecification<Order>
 {
-    public GetAllOrdersWithOrderItemsSpecification()
-    {
-        AddIncludes([order => order.OrderItems, order => order.DeliveryMethod]);
-    }
+	public GetAllOrdersWithOrderItemsSpecification()
+	{
+		AddIncludes(order => order.OrderItems);
+		AddIncludes(order => order.OrderItems);
+	}
 }

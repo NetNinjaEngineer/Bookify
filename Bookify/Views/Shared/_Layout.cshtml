@@ -1,4 +1,8 @@
 ﻿@using System.Security.Claims
+@inject IConfiguration configuration
+@{
+	var baseUrl = configuration["BaseUrl"];
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -39,6 +43,18 @@
 <body>
 
 	<div class="page-wraper">
+
+		<div id="loading-area" class="preloader-wrapper-1">
+			<div class="preloader-inner">
+				<div class="preloader-shade"></div>
+				<div class="preloader-wrap"></div>
+				<div class="preloader-wrap wrap2"></div>
+				<div class="preloader-wrap wrap3"></div>
+				<div class="preloader-wrap wrap4"></div>
+				<div class="preloader-wrap wrap5"></div>
+			</div>
+		</div>
+
 		<!-- Header -->
 		<header class="site-header mo-left header style-1">
 
@@ -83,11 +99,8 @@
 							<div class="input-group search-input">
 								@RenderSection("SelectGenre", required: false)
 
-								  @* solve this again *@
-								<form asp-action="SearchBooks" asp-controller="Books" method="get">
-									<input type="text" name="searchTerm" class="form-control" aria-label="Text input with dropdown button" placeholder="Search Books Here/ Solve this problem again !!!!!!">
-								</form>
-								
+								<input type="text" id="searchBooks" class="form-control" aria-label="Text input with dropdown button" placeholder="Search Books Here">
+
 								<button class="btn" type="button"><i class="flaticon-loupe"></i></button>
 							</div>
 						</form>
@@ -124,12 +137,6 @@
 							<div class="logo-header logo-dark">
 								<a href="index.html"><img src="~/images/logo.png" alt=""></a>
 							</div>
-							<form class="search-input">
-								<div class="input-group">
-									<input type="text" class="form-control" aria-label="Text input with dropdown button" placeholder="Search Books Here">
-									<button class="btn" type="button"><i class="flaticon-loupe"></i></button>
-								</div>
-							</form>
 							<ul class="nav navbar-nav">
 								<li class="">
 									<a asp-action="Index" asp-controller="Home" ><span>Home</span></a>
@@ -142,6 +149,13 @@
 								
 								<li><a asp-action="Index" asp-controller="Genres" ><span>Genres</span></a></li>
 
+								@if(!User.Identity!.IsAuthenticated)
+								{
+									<li><a asp-action="Register" asp-controller="Account"><span>Register</span></a></li>
+
+									<li><a asp-action="Login" asp-controller="Account"><span>Login</span></a></li>
+								}
+
 							</ul>
 							<div class="dz-social-icon">
 								<ul>
@@ -152,8 +166,16 @@
 								</ul>
 							</div>
 						</div>
+
+				
+
+
 					</div>
 				</div>
+			</div>
+
+			<div id="searchResults" class="search-results w-75 mx-auto" style="z-index: -999">
+				<ul class="list-group"></ul>
 			</div>
 
 
@@ -288,7 +310,53 @@
 	<script src="~/js/dz.carousel.js"></script><!-- DZ CAROUSEL JS -->
 	<script src="~/js/dz.ajax.js"></script><!-- AJAX -->
 	<script src="~/js/custom.js"></script><!-- CUSTOM JS -->
-	<script src="~/js/site.js"></script>
+
+	<script>
+		document.getElementById('searchBooks').addEventListener('input', function () {
+			var searchTerm = this.value;
+
+			var xhr = new XMLHttpRequest();
+			xhr.open('GET', `@baseUrl/Books/SearchBooks?searchTerm=` + encodeURIComponent(searchTerm), true);
+			xhr.setRequestHeader('Accept', 'application/json');
+
+			xhr.onload = function () {
+				if (xhr.status === 200) {
+					var result = JSON.parse(xhr.responseText);
+					console.log(result);
+					var bookList = document.querySelector('#searchResults .list-group');
+					bookList.innerHTML = '';
+
+					result.forEach(function (book) {
+						var listItem = document.createElement('li');
+						listItem.className = 'list-group-item d-flex align-items-center';
+
+						listItem.innerHTML = `
+						
+							<div style="flex-grow: 1;">
+								<a href="/Books/Details/${book.id}" alt="${book.title}">
+									<img src="${book.pictureUrl}" alt="${book.title}" class="img-thumbnail" style="width: 50px; height: auto; margin-right: 10px;">
+								</a>
+								<h5 class="mb-1">${book.title}</h5>
+								<p class="mb-1">Author: ${book.author}</p>
+								<small>Genre: ${book.genre}</small>
+							</div>
+						`;
+
+						bookList.appendChild(listItem);
+					});
+
+				} else {
+					console.error('Error retrieving books:', xhr.statusText);
+				}
+			};
+
+			xhr.onerror = function () {
+				console.error('Request Search Books failed');
+			};
+
+			xhr.send();
+		});
+	</script>
 
 
     @await RenderSectionAsync("Scripts", required: false)

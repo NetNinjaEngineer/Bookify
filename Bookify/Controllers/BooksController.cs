@@ -41,7 +41,7 @@ public class BooksController : Controller
 		return View(mappedBook);
 	}
 
-	[HttpPost]
+	[HttpGet]
 	public async Task<IActionResult> SearchBooks(string searchTerm)
 	{
 		var spec = new GetAllBooksWithGenresAndAuthorsSpecification(searchTerm);

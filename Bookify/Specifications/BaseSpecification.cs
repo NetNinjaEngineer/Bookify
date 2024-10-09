@@ -14,7 +14,10 @@ public class BaseSpecification<TEntity> : IBaseSpecification<TEntity> where TEnt
 
 	public BaseSpecification(Expression<Func<TEntity, bool>> criteria) => Criteria = criteria;
 
-	protected void AddIncludes(params List<Expression<Func<TEntity, object>>> includeExpressions)
-		=> Includes = includeExpressions;
+	protected void AddIncludes(Expression<Func<TEntity, object>>? includeExpression)
+	{
+		if (includeExpression is not null)
+			Includes.Add(includeExpression);
+	}
 
 }
