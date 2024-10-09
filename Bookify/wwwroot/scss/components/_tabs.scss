@@ -1,0 +1,37 @@
+.nav-tabs.nav-tabs1{
+	border: 0;
+    justify-content: space-between;
+
+	.nav-link {
+		margin-bottom: 0;
+		font-size: 18px;
+		font-weight: 600;
+		color: $body-color;
+		border-radius: 0;
+		line-height: 18px;
+		padding: 20px 30px;
+		
+		&.active{
+			color: var(--title);
+			border: 1px solid $border-color;
+		}
+	}
+	
+	@include respond('tab-land'){
+		.nav-link {
+			font-size: 16px;
+			line-height: 16px;
+			padding: 18px 25px;
+		}
+	}
+	@include respond('phone'){
+		.nav-link {
+			font-size: 14px;
+			line-height: 14px;
+			padding: 15px;
+		}	
+	}
+}
+.tab-content{
+	margin-top:0px;
+}

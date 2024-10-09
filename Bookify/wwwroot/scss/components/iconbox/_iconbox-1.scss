@@ -1,0 +1,218 @@
+.icon-bx-wraper{
+	
+	// Style 1
+	&.style-1{
+		[class*="icon-bx-"]{
+			background-color: var(--rgba-primary-1);
+			border-radius: var(--border-radius-base);
+			-webkit-transition: all 2s;
+			-ms-transition: all 2s;
+			transition: all 2s;
+			margin-bottom: 25px;
+			
+			.icon-cell{
+				color: var(--primary);
+				display: block;
+			}
+		}
+		&:hover {
+			[class*="icon-bx-"]{
+				animation: dash 5s linear infinite;
+				background-color: var(--primary);
+				.icon-cell{
+					animation: shake 1s;
+					color:$white;
+				}
+			}
+		}
+		p{
+			color: #AAAAAA;
+		}
+	}
+	
+	// Style 2
+	&.style-2{
+		[class*="icon-bx-"]{
+			border-radius: var(--border-radius-base);
+			margin-bottom: 30px;
+			position: relative;
+			background: linear-gradient(90deg, var(--primary) 50%, transparent 50%), linear-gradient(90deg, var(--primary) 50%, transparent 50%), linear-gradient(0deg, var(--primary) 50%, transparent 50%), linear-gradient(0deg, var(--primary) 50%, transparent 50%);
+			background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+			background-size: 8px 3px, 8px 3px, 3px 8px, 3px 8px;
+			background-position: 0% 0%, 100% 100%, 0% 100%, 100% 0px;
+			.icon-cell{
+				color: var(--primary);
+			}
+		}
+		&:hover {
+		[class*="icon-bx-"]{
+			animation: dash 5s linear infinite;}
+			.icon-cell{
+			    animation: shake 1s;
+			}
+		}
+		@media screen and (max-width: 768px){
+			[class*="icon-bx-"]{
+				width: 80px;
+				height: 80px;
+				line-height: 80px;
+				margin-bottom: 15px;
+				 background-size: 8px 2px, 8px 2px, 2px 8px, 2px 8px;
+				.icon-cell{
+					font-size:40px;
+				}
+			}
+			.icon-content{
+				.dz-title{
+					margin-bottom:0!important;
+				}
+				p{
+					font-size: 16px;
+				}
+			}
+		}
+	}
+	
+	// Style 3
+	&.style-3{
+		box-shadow: 1px 1.732px 60px 0px rgba(0,0,0,0.10);
+		padding:45px;
+		border-radius:14px;
+		background-color:$white;
+		border: 2px solid transparent;
+		@include transitionMedium;
+		[class*="icon-lg"]{
+			.icon-cell{
+				color:$secondary;
+				margin-bottom:30px;
+			}
+		}
+		.icon-content{
+			.title{
+				margin-bottom:15px;
+			}
+			p{
+				margin-bottom: 20px;
+			}
+			a{
+				font-size: 18px;
+				font-weight: $headings-font-weight ;
+			}
+		}
+		&:hover{
+			transform: translateY(-20px);
+			border: 2px solid var(--primary);
+			[class*="icon-lg"]{
+				.icon-cell{
+					color:var(--primary);
+				}
+			}
+		}
+		@media screen and (max-width: 1200px) {
+			padding: 22px 24px 28px;
+		}
+		@media screen and (max-width: 1024px) {
+			.icon-content{
+				.title{
+					font-size:25px;
+				}
+			}
+		}
+		@media screen and (max-width: 991px) {
+			margin-top:20px;
+		}
+	}
+	// Style 4
+	&.style-4{
+		display: flex;
+		align-items: center;
+		margin-bottom:20px;
+		
+		[class*="icon-bx-"]{
+			background-color: #FFF7EE;
+			border-radius: 60px;
+			min-width: 90px;
+			@include transitionMedium;
+			width: 90px;
+			height: 90px;
+			line-height: 90px;
+			.icon-cell{
+				display:block;
+				color: #EAA451;
+				font-weight: 600;
+				font-size: 25px;
+			}
+			
+		}
+		&:hover [class*="icon-bx-"]{
+			background-color:var(--primary);
+			.icon-cell{
+				color:$white;
+			}
+		}
+		.icon-content{
+			padding-left: 28px;
+			p{
+				font-size: 18px;
+				font-family: cairo;
+			}
+		}
+		@media screen and (max-width: 1380px) {
+			[class*="icon-bx-"]{
+				min-width: 75px;
+				width: 75px;
+				height: 75px;
+				line-height: 75px;
+			}
+			.icon-content {
+				padding-left: 10px;
+				
+			}
+		}
+	}
+	
+	// Style 5
+	&.style-5{
+		text-align: center;
+		border: 1px solid #D7D7D7;
+		margin-bottom: 30px;
+		padding: 30px 20px;
+		border-radius: 14px;
+		[class*="icon-bx-"]{
+			width: 100px;
+			min-width: 100px;
+			height: 100px;
+			line-height: 100px;
+			@include transitionMedium;
+			background-color: var(--primary);
+			color: #ffffff;
+			border-radius: 50%;
+			margin-bottom:15px;
+		}
+		.icon-content{
+			p{
+				font-size:18px;
+				font-weight:500;
+				font-family: var(--font-family-title);
+				color:#131045;
+				@include respond('tab-land'){
+					font-size:16px;
+				}
+			}
+		}
+		&:hover{
+			[class*="icon-bx-"]{
+				background-color:var(--rgba-primary-1);
+				.icon-cell{
+					color:var(--primary);
+				}
+			}
+		}
+	}
+}
+
+@keyframes dash {
+  to {
+		background-position: 100% 0%, 0% 100%, 0% 0%, 100% 100%;
+	} 
+}

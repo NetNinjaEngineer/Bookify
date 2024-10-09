@@ -1,0 +1,45 @@
+.dz-bnr-inr {
+	&.style-1{
+		background-color:var(--secondary);
+		.dz-bnr-inr-entry{
+			height:400px;
+			img{
+				width:100px;
+				margin-bottom: 0;
+			}
+			.title{
+				font-size:3.125rem;
+				padding: 10px 0;
+				margin-bottom: 0;
+			}
+		}
+		@media screen and (max-width: 991px) {
+			.dz-bnr-inr-entry{
+				p{
+					font-size:15px;
+				}
+			}
+		}
+		@media screen and (max-width: 600px) {
+			.dz-bnr-inr-entry{
+				
+				p{
+					font-size:13px;
+					width: 100%;
+					margin-left:0;
+					margin-right:0;
+				}
+			}
+		}
+		@media screen and (max-width: 360px) {
+			.dz-bnr-inr-entry{
+				p{
+					display:none;
+				} 
+			}
+		}
+	}
+}
+
+
+

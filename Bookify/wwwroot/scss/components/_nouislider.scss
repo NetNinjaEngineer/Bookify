@@ -1,0 +1,54 @@
+// range-slider
+.range-slider{
+	&.style-1{
+		padding: 10px 15px 40px;
+		.noUi-horizontal{
+			height: 8px;
+			.noUi-handle {
+				width: 24px;
+				height: 24px;
+				border-radius: 50%;
+				border: 0;
+				background-color: var(--secondary);
+				box-shadow: none;
+				top: -9px;
+				&:before,
+				&:after{
+					content: none;
+				}
+				
+				.noUi-tooltip {
+					border: 0px;
+					background: var(--primary);
+					color: rgb(255, 255, 255);
+					border-radius: 4px;
+					font-size: 13px;
+					bottom: -35px;
+					font-weight: 600;
+					padding: 2px 5px;
+					&:after{
+						content: "";
+						position: absolute;
+						background-color: inherit;
+						width: 10px;
+						height: 10px;
+						top: 4px;
+						margin-left: -4px;
+						left: 50%;
+						transform: rotate(45deg) translate(-50%, -50%);
+					}
+				}
+			}
+		}
+		.noUi-target {
+			background: #F0EEFF;
+			border-radius: 4px;
+			border: 0;
+			box-shadow: none;
+			
+			.noUi-connect {
+				background: var(--secondary);
+			}
+		}
+	}
+}

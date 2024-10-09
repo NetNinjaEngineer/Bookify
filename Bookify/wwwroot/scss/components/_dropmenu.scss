@@ -1,0 +1,13 @@
+.dropdown-menu{
+	background-color:$light;
+	.dropdown-item{
+	    padding: 5px 20px;
+		font-size: 14px;
+	}
+	.dropdown-footer{
+		padding: 10px 20px 10px;
+	}
+	.dropdown-header{
+		padding: 10px 20px 10px;
+	}
+}

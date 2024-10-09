@@ -1,0 +1,51 @@
+.dzmove1{
+	animation: dzMove1 1s linear infinite;
+}
+.dzheart{
+	animation: dzHeart 1s linear infinite;
+}
+
+@keyframes dzMove1 {
+    0% {
+        -webkit-transform: translate(0);
+        transform: translate(0);
+    }
+    25% {
+        -webkit-transform: translate(10px, 10px);
+        transform: translate(10px, 10px);
+    }
+    50% {
+        -webkit-transform: translate(5px, 5px);
+        transform: translate(5px, 5px);
+    }
+    75% {
+        -webkit-transform: translate(10px, -5px);
+        transform: translate(10px, -5px);
+    }
+    to {
+        -webkit-transform: translate(0);
+        transform: translate(0);
+    }
+}
+@keyframes dzHeart {
+    0% { 
+        transform: scale(1); 
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(0.9);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,86 @@
+.contact-wraper1{
+    margin-bottom: 60px;
+	position: relative;
+	background-position: -260px center;
+		
+	.contact-info{
+		padding: 50px 30px;
+	}
+	.contact-area1{
+	    margin-top: -180px;
+		margin-bottom: -100px;
+	}
+	&:before{
+		content: "";
+		height: 100%;
+		width: 50%;
+		position: absolute;
+		left: 0;
+		top: 0;
+		z-index: -1;
+		background: linear-gradient(to right, rgba(26, 22, 104, 0.5) 0%, rgb(26, 22, 104) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	}
+	&:after{
+		content: "";
+		height: 100%;
+		width: 50%;
+		background-color: #fff;
+		position: absolute;
+		right: 0;
+		top: 0;
+		z-index: -1;
+	}
+	@include respond ('tab-land'){
+		.contact-info{
+			padding: 50px 0px;
+		}
+	}
+	@include respond ('tab-port'){
+		background-position: center;
+		background-size: cover;
+		margin-bottom: 0;
+	
+		&:after{
+			content: none;
+		}
+		&:before{
+			height:100%;
+			width: 100%;
+		}
+		.contact-area1 {
+			margin-top: 0;
+			margin-bottom: 0;
+		}
+		.contact-info{
+			padding: 50px 0px 20px;
+		}
+	}
+}
+.contact-area1{
+	padding: 50px;
+	background: #fff;
+  	box-shadow: 0px 3px 29px 0px rgba(0, 0, 0, 0.07);
+  	@include respond ('phone'){
+  		padding: 30px;
+  	}
+}
+.map-iframe{
+    height: 450px;
+	@include respond ('phone'){
+	    height: 250px;
+	}
+}
+form{
+	.g-recaptcha {
+		@include respond ('phone'){
+			transform: scale(0.7);
+			-moz-transform: scale(0.7);
+			-o-transform: scale(0.7);
+			-webkit-transform: scale(0.7);
+			transform-origin: 0 0;
+			-moz-transform-origin: 0 0;
+			-o-transform-origin: 0 0;
+			-webkit-transform-origin: 0 0;
+		}
+	}
+}

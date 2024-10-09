@@ -1,0 +1,299 @@
+// dz-accordion
+.dz-accordion{
+	.accordion-item{
+		border-radius: var(--border-radius-base);
+		overflow: hidden;
+		background: #fff;
+		margin-bottom: 20px;
+	}
+	.accordion-body{
+		padding: 25px 30px;
+		border-radius: 0;
+	}
+	.accordion-collapse{
+		border: 0;
+	}
+	.accordion-header{
+		.accordion-button{
+			font-size: 18px;
+			font-weight: 800;
+			border: 0;
+			border-radius: 8px;
+			padding: 22px 65px 22px 30px;
+			transition: all 0.5s;
+			color: $white;
+			box-shadow: 5px 0 15px var(--rgba-primary-4);
+			background-color: var(--primary);
+			
+			&:after{
+				content: none;
+			}
+			
+			.toggle-close{
+				font-family: themify;
+				height: 55px;
+				width: 55px;
+				display: block;
+				position: absolute;
+				right: 6px;
+				top: 50%;
+				transform:translateY(-50%);
+				border-radius: var(--border-radius-base);
+				line-height: 57px;
+				text-align: center;
+				font-size: 20px;
+				@include transitionMedium;
+				z-index:1;
+				overflow:hidden;
+				
+				&:after{
+					content: "\f068";
+					position:absolute;
+					font-family: 'Font Awesome 5 Free';
+					z-index:-1;
+					color:#fff;
+					background-color:transparent;
+					@include transitionMedium;
+					width:100%;
+					height:100%;
+					left:0;
+					top:0;
+					opacity:1;
+				}
+			}
+			
+			&.collapsed{
+				background: #f5f5f5;
+				color: #13212a;
+				&:after{
+					opacity:0;
+				}
+				.toggle-close{
+					&:after{
+						content: "\f067";
+						opacity:1;
+						color:var(--primary);
+					}
+				}
+				
+			}
+		}
+		@include respond('phone'){
+			.accordion-button{
+				padding: 15px 65px 15px 15px;
+				font-size:16px;
+			}
+		}
+	}
+	&.accordion-sm{
+		.accordion-body {
+			padding: 25px;
+		}
+		.accordion-header{
+			.accordion-button{
+				padding: 18px 55px 18px 25px;
+				.toggle-close{
+					height: 50px;
+					width: 50px;
+					line-height: 50px;
+					&:before{
+						font-size: 25px;
+						line-height: 50px;
+					}
+				}
+			}
+			@include respond('phone'){
+				.accordion-button{
+					padding: 15px 65px 15px 15px;
+				}
+			}
+		}
+	}
+	&.style-1{
+		.accordion-item{
+			margin-bottom:0;
+		}
+		.accordion-header{
+			.accordion-button{
+				background:transparent;
+				padding:20px 10px 20px 45px;
+				box-shadow:none;
+				color:var(--title);
+				border-bottom:1px solid #cccccc;
+				border-radius:0;
+				.toggle-close{
+					left:0;
+					height: 30px;
+					width: 30px;
+					&:after{
+						color:var(--primary);
+						height: 30px;
+						width: 30px;
+						line-height: 25px;
+						font-size: 17px;
+						border-radius: 30px;
+						border: 2px solid var(--primary);
+					}
+				}
+				&.collapsed{
+					border-bottom:0;
+				}
+			}
+		} 
+		.accordion-body{
+			padding: 20px 0;
+		}
+	}
+	
+	&.gradient-bg{
+		.accordion-item{
+			overflow:visible;
+		} 
+		.accordion-header {
+			.accordion-button{
+				/* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#c42780+9,1a1dbc+100 */
+				background: rgb(196,39,128); /* Old browsers */
+				background: -moz-linear-gradient(left,  rgba(196,39,128,1) 9%, rgba(26,29,188,1) 100%); /* FF3.6-15 */
+				background: -webkit-linear-gradient(left,  rgba(196,39,128,1) 9%,rgba(26,29,188,1) 100%); /* Chrome10-25,Safari5.1-6 */
+				background: linear-gradient(to right,  rgba(196,39,128,1) 9%,rgba(26,29,188,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c42780', endColorstr='#1a1dbc',GradientType=1 ); /* IE6-9 */
+				box-shadow:none;
+				&.collapsed{
+					background:#fff;
+					box-shadow: rgba(50, 50, 93, 0.1) 0px 6px 12px -2px, rgba(0, 0, 0, 0.15) 0px 3px 7px -3px;
+				}
+			}
+		}
+	}
+	&.rounded{
+		.accordion-header {
+			.accordion-button{
+				border-radius:40px;
+				box-shadow:none;
+				&.collapsed{
+					box-shadow:none;
+					background:var(--primary);
+					color:#fff;
+					.toggle-close::after{
+						color:#fff;
+					}
+				}
+			}
+		}
+	}
+	
+}
+//main
+.acod-content{
+	background-color:$white;
+	border: 1px solid rgba(0, 0, 0, 0.125);
+    margin-bottom: 40px;
+	margin-top: -30px;
+	transition: all 0.5s;
+	
+	.widget{
+		padding: 25px 25px;
+		&.widget_services{
+			display:flex;
+			flex-wrap: wrap;
+			
+			.form-check {
+				margin-bottom: 10px;
+				width:25%;
+				.form-check-input{
+					border:2px solid #AAAAAA;
+					width:	1.25rem;
+					height:	1.25rem;
+					margin-top:0;
+					&:checked{
+						background-color:var(--primary);
+						border:1px solid var(--primary);
+					}
+				}
+				.form-check-label{
+					font-family:var(--font-family-title);
+					margin-left: 10px;
+					font-size: 15px;
+				}
+				@include respond('wide-desktop') {
+					.form-check-input{
+						
+						margin-top: 0.3rem;
+					}
+					.form-check-label{
+						font-size: 14px;
+					}
+				}
+				@include respond('tab-land') {
+					width:33%;
+				}
+				@include respond('phone-land') {
+					width:50%;
+				}
+				@include respond('phone') {
+					width:100%;
+				}
+			}
+			&.style-2 .form-check {
+				width:33.33%;
+				@include respond('phone-land') {
+					width:50%;
+				}
+				@include respond('phone') {
+					width:100%;
+				}
+			}
+		}
+		
+	} 
+	@include respond('phone-land') {
+		max-height: 250px;
+		overflow: scroll;
+		.widget{
+			margin-bottom:0;
+		}
+	}   
+}
+.accordion{
+	&.accordion-filter{
+		.accordion-item{
+			margin-bottom: 12px;
+			border-radius: 6px;
+			box-shadow: none;
+			overflow:hidden;
+			border: 1px solid rgba(0, 0, 0, 0.125) !important;
+			.accordion-button{
+				background: $white;
+				padding: 12px 20px;
+				color: var(--secondary);
+				font-size: 1rem;
+				font-family: var(--font-family-title);
+				box-shadow: none;
+				font-weight: 500;
+				height: 60px;
+			}
+			.accordion-body{
+				padding:0 20px;
+				border-top: 1px solid rgba(0, 0, 0, 0.125);
+				transition: all 0.5s;
+				&.show{
+					padding:20px;
+				}
+				ul{
+					padding-left:0px;
+					li{
+						padding: 4px 0px;
+						font-size: 16px;
+						a{
+							color:var(--secondary);
+							&:hover{color:var(--primary);}
+						}
+					}
+				}
+				.slider-range {
+					padding: 15px 8px 75px;
+				}
+			}
+		}
+	}
+}

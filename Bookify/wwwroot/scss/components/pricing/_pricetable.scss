@@ -1,0 +1,106 @@
+.pricingtable-wrapper{
+	box-shadow: 1px 0 50px rgba(0 ,0 ,0 ,0.1);
+	background-color:#fff;
+	border-radius:var(--border-radius-base);
+	overflow:hidden;
+	margin-top: 25px;
+	@include  transitionMedium;
+	&.active, &:hover{
+		margin-top:0;
+	}
+	@include respond('phone'){	
+		margin-top:0;
+	}
+	&.style-1{
+		padding: 35px 60px;
+		position: relative;
+		z-index: 1;
+		.pricingtable-inner{
+			text-align: center;
+			.pricingtable-title{
+				margin-bottom: 15px;
+			}
+			.pricingtable-bx{
+				font-size: 50px;
+				margin: 0 0 20px;
+				color: var(--primary);
+				small{
+					font-size: 15px;
+					color: #1f2471;
+					font-weight: var(--headings-font-weight);
+				}
+			}
+			.text{
+				margin-bottom: 25px;
+			}
+			.pricingtable-features{
+				padding: 15px 0;
+				border-top: 1px solid rgba(0, 0, 0, 0.05);
+				text-align: left;
+				list-style: none;
+				li{
+					padding: 8px 0 8px 40px;
+					font-size: 18px;
+					position: relative;
+					&:after{
+						content: "\f00c";
+						font-family: 'Font Awesome 6 Free';
+						font-weight: 700;
+						font-size: 12px;
+						width: 26px;
+						height: 26px;
+						background: var(--rgba-primary-1);
+						display: block;
+						position: absolute;
+						left: 0;
+						color: var(--primary);
+						border-radius: 35px;
+						text-align: center;
+						top: 10px;
+						line-height: 26px;
+					}
+				}
+			}
+		}
+		&:hover{
+			margin-top:0;
+			transform:translateY(-20px);
+			background-color:var(--primary);
+			color:#fff;
+			.pricingtable-inner{
+				.pricingtable-title{
+					.title{
+						color:#fff;
+					}
+				}
+				.pricingtable-price{
+					.pricingtable-bx{
+						color:#fff;
+						small{
+							color:#fff;
+						}
+					}
+				}
+				.pricingtable-features{
+					border-top: 1px solid rgba(255,255,255,0.27);
+					li{
+						&:after{
+							color: #fff;
+							background: rgba(255,245,232,0.22);
+						}
+					}
+				}
+				.pricingtable-footer{
+					.btn{
+						color:var(--primary);
+						background-color:#fff;
+					}
+				}			
+			}
+		}
+		@media only screen and (max-width: 1024px) {
+			padding: 35px 30px;
+		}
+
+	}
+}

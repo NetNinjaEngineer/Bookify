@@ -1,0 +1,112 @@
+.dz-separator {
+    display: inline-block;
+    margin-bottom: 10px;
+	margin-top: 8px;
+    position: relative;
+	&.m-b0 {
+		margin-bottom:0;
+	}
+	&.style-liner {
+		width: 20px;
+	}
+	&.style-icon {
+		width: 30px;
+		height: auto;
+		text-align: center;
+		font-size: 20px;
+	}
+	&.style-skew {
+		width: 15px;
+		height: 10px;
+		margin-left: 1px;
+		margin-right: 1px;
+		-moz-transform: skewX(-10deg);
+		-webkit-transform: skewX(-10deg);
+		-o-transform: skewX(-10deg);
+		-ms-transform: skewX(-10deg);
+		transform: skewX(-10deg);
+		
+		&[class*="style-"]{
+			&:after,
+			&:before {
+				width: 80px;
+				height: 4px;
+				left: 20px;
+				-moz-transform: translateY(-50%) skewX(-10deg);
+				-webkit-transform: translateY(-50%) skewX(-10deg);
+				-o-transform: translateY(-50%) skewX(-10deg);
+				-ms-transform: translateY(-50%) skewX(-10deg);
+				transform: translateY(-50%) skewX(-10deg);
+			}
+			&:before {
+				right: 20px;
+				left: auto;
+			}
+		}
+	}
+	&.bnr-title{
+		height:1px;
+		width: 155px;
+		opacity: 0.5;
+		&:before,
+		&:after{
+			position:absolute;
+			content:"";
+			background-color:inherit;
+		}
+		&:before {
+			height: inherit;
+			right: -80px;
+			width: 25px;
+		}
+		&:after {
+			height: inherit;
+			right: -90px;
+			top: 0;
+			width: 6px;
+		}
+		i {
+			background-color: inherit;
+			display: block;
+			height: inherit;
+			position: absolute;
+			right: -50px;
+			width: 45px;
+		}
+	}
+}
+.dz-separator-outer {
+    overflow: hidden;
+}
+.dz-separator{
+	&.style-1{
+		height: 3px;
+		width: 60px;
+		background: var(--primary);
+	}
+	&.style-2{
+		height: 10px;
+		display: block;
+		width: 82px;
+		position: relative;
+		margin: 0;
+		&:before,
+		&:after {
+			content: "";
+			height:3px;
+			width:89px;
+			position:absolute;
+			background:var(--primary);
+			left:0;
+		}
+		&:after{
+			width:80%;
+			bottom:0;
+		}
+		&:before{
+			width:100%;
+			top:0;
+		}
+		
+	}
+}

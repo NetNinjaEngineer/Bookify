@@ -1,0 +1,265 @@
+
+.testimonial-1{
+	padding: 40px;
+    border-radius: 14px;
+	background:var(--grey);
+	@include transitionSlow;
+	.dz-rating{
+		margin: 0 -3px 20px;
+		li{
+			padding: 0px 3px;
+			font-size: 24px;
+			display: inline-block;
+			line-height: 1;
+		}
+	}
+	.testimonial-text{
+		p{
+			font-size: 18px;
+			margin: 0;
+			font-weight: 500;
+			font-style: italic;
+		}
+	}
+	.testimonial-pic{
+		width:60px;
+		height:60px;
+		border-radius: 50%;
+		overflow: hidden;
+		margin-right: 15px
+	}	
+	.testimonial-detail {
+		align-items: center;
+		display: flex;
+		margin-top: 30px;
+		padding: 0;
+		
+		.testimonial-name{
+			margin-bottom:5px;
+		}
+		.testimonial-position{
+			font-size:14px;
+			font-weight: var(--headings-font-weight2);
+		}
+	}
+	&:hover{
+		background:var(--primary);
+		color:#fff;
+		.dz-rating{
+			li{
+				i{
+					&.text-muted{
+						color: #ffffff61;
+					}
+					&.text-yellow{
+						color:$white;
+					}
+					
+				} 
+			}
+		}
+		.testimonial-name{
+			color: $white;
+		}
+	}
+	@media only screen and (max-width: 600px) { 
+		margin:0 50px;
+	}
+	@include respond('phone'){
+		margin:0 14px;
+	}
+}
+.testimonial-swiper {
+    padding: 0 15px;
+}
+.testimonial-swiper-2{
+	.swiper-slide{
+		opacity:0.5;
+		&.swiper-slide-active{
+			opacity:1;
+		}
+	}
+} 
+.testimonial-2{
+	display:flex;
+	position:relative;
+	align-items:center;
+
+	.test-quotes{
+		position: absolute;
+		z-index: 1;
+		font-size: 105px;
+		bottom: 0;
+		color: var(--primary);
+		right: 20px;
+	}
+	.pattern{
+		position: absolute;
+		z-index: 1;
+		left: -68px;
+		bottom: 49px;
+	}
+	.testimonial-pic{
+		min-width: 365px;
+		height: 369px;
+		border:none;
+		position:relative;
+		img{
+			width:100%;
+			height:100%;
+			object-fit: cover;
+			border-radius:var(--border-radius-base);
+		}
+		@include respond('tab-port'){
+			min-width: 120px;
+			height: 120px;
+			border-radius:120px;
+		}
+	}
+	.testimonial-info{
+		padding: 0 30px;
+		.dz-rating{
+			li{
+				padding: 0px 2px;
+				font-size: 18px;
+			}
+		}
+		.testimonial-text{
+			font-size:18px;
+			font-style: italic;
+		}
+		.testimonial-detail{
+			display:block;
+			margin-top:30px;
+			justify-content:space-between;
+			.dz-rating-bar{
+				display:flex;
+				align-items:center;
+			    margin-top: 20px;
+			    line-height: 1;
+				.dz-rating{
+					display:flex;
+				}
+				.rate{
+					font-size:20px;
+					font-weight: var(--headings-font-weight);
+					font-family: var(--font-family-title);
+					margin-left: 14px;
+					margin-left: -2px;
+					//font-weight: 500;
+					margin-left: 15px;
+				    color: var(--title);
+				}
+			}
+			@include respond('tab-land'){
+				margin-top:10px;
+			}
+		}
+	}
+	
+	@include respond('tab-port'){
+		.testimonial-pic{
+		    align-self: start;
+		}
+		.testimonial-info{
+			padding: 0 0px 0 25px;
+			.testimonial-text{
+				font-size:15px;
+			}
+			.testimonial-detail{
+				display:block;
+				margin-top:15px;
+				.testimonial-name{
+					font-size: 16px;
+				}
+				.testimonial-position{
+					font-size:14px;
+				}
+			}
+		}
+		.pattern{
+			left: -30px;
+		}
+	}
+	@include respond('phone-land'){
+		
+		display:block;
+		.test-quotes{
+			top:0;
+		    font-size: 100px;
+		}
+		.pattern{
+			display:none;
+		}
+		.testimonial-pic{
+			min-width: 100px;
+			height: 100px;
+		}
+		.testimonial-info{
+			padding:20px 0 0 0;
+			.testimonial-text{
+				font-size:15px;
+			}
+		}	
+	}
+	@include respond('phone'){
+		.testimonial-info{
+			.testimonial-detail{
+				display:block;
+			}
+		}
+	}
+}	
+	
+.testimonial-wrapper{
+	overflow: hidden;
+	.swiper-container{
+		margin-left: calc((100% - 1170px) /2);
+		
+		@include respond('laptop'){
+			margin-left: 30px;
+		}
+		@include respond('phone-land'){
+			margin-left: 10px;
+		}
+		@include respond('phone-land'){
+			margin-left: 0;
+		}
+	}
+}
+
+.testimonial-wrapper-2{
+	.swiper-slide{
+		.testimonial-2{
+			opacity:0.5;
+		}
+		&.swiper-slide-active{
+			.testimonial-2{
+				opacity:1;
+			}
+		}
+	}
+}
+
+.swiper-slide-active{
+	.testimonial-1{
+		background-color:var(--primary);
+		color:#fff;
+		.dz-rating{
+			li{
+				i{
+					&.text-muted{
+						color: #ffffff61;
+					}
+					&.text-yellow{
+						color:$white;
+					}
+					
+				} 
+			}
+		}
+		.testimonial-name{
+			color: $white;
+		}
+	}
+}

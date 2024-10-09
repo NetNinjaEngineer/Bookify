@@ -1,0 +1,132 @@
+.pagination{
+	&.style-1{
+		justify-content:end;
+		li{
+			.page-numbers,
+			.page-link{
+				height: 50px;
+				min-width:50px;
+				line-height: 50px;
+				color: var(--secondary);
+				text-align: center;
+				border: 0;
+				padding: 0;
+				@include transitionFast
+				font-size: 16px;
+				font-weight: var(--headings-font-weight);
+				border-radius: var(--border-radius-base) ;
+				padding: 0 10px;
+				margin: 0 2px;
+				display: block;
+				background-color:#ebebeb;
+				
+				&.current,
+				&.active,
+				&:hover{
+					color: $white;
+					background-color: var(--secondary);
+					border-color: var(--secondary);
+				}
+			}
+			@include respond ('phone'){
+				margin: 0 3px;
+				.page-numbers,
+				.page-link{
+					height: 35px;
+					min-width: 35px;
+					line-height: 35px;
+					border-radius: 6px;
+				}
+			}
+			.prev,
+			.next{
+				background-color:#ebebeb;
+				border-color: transparent;
+				font-size: 16px;
+				min-width: 113px;
+				border-radius: 6px;
+				&:hover{
+					background-color:var(--secondary);
+					box-shadow:none;
+					color:$white;
+				}
+				@include respond('phone') {
+					min-width:90px;
+					font-size: 14px;
+				}
+			}
+		}
+		&.text-center{
+			justify-content: center;
+		}
+		&.pagination-lg{
+			li{
+				.page-numbers,
+				.page-link{
+					height: 80px;
+					min-width: 80px;
+					line-height: 80px;
+					border-radius: 80px;
+				}
+			}
+		}
+		&.pagination-md{
+			li{
+				.page-numbers,
+				.page-link{
+					height: 60px;
+					min-width: 60px;
+					line-height: 60px;
+					border-radius: 40px;
+				}
+			}
+		}
+		&.pagination-sm{
+			li{
+				.page-numbers,
+				.page-link{
+					height: 40px;
+					min-width: 40px;
+					line-height: 40px;
+					border-radius: 40px;
+				}
+			}
+		}
+		&.rounded-0{
+			.page-item{
+				.page-link{
+					border-radius: 0;
+				}
+			}
+		}	
+		.page-numbers{
+			border: 1px solid #F0F0F0;
+			display:inline-flex;
+			margin: 0 20px;
+			background-color: $white;
+			border-radius: var(--border-radius-base);
+			.page-item{
+				.page-link{
+					background-color:$white;
+					color: var(--secondary);
+					&.active,
+					&:hover{
+						color: $white;
+						background-color: var(--secondary);
+						border-color: var(--secondary);
+						.page-num{
+							background-color:transparent;
+						}
+					}
+				}
+			}
+			@include respond('phone') {
+				margin: 0 5px;
+			}
+		}
+		@include respond('phone-land') {
+			justify-content:center;
+		}
+	}
+}
+

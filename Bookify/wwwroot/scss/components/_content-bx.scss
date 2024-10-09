@@ -1,0 +1,16 @@
+.dz-content-bx{
+	position: relative;
+	overflow: hidden;
+	.content-media{
+		img{
+			width: 100%;
+			height: 100%;
+			object-fit: cover;
+		}
+	}
+	.dz-content-inner{
+		position: relative;
+	}
+	
+	
+}

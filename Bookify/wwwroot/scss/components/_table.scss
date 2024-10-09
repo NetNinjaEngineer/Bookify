@@ -1,0 +1,105 @@
+.table-responsive-sm {
+    min-width: 48rem;
+}
+
+.table {
+    margin-bottom     : 0px;
+    font-weight       : 400;
+
+    tr {
+
+        td,
+        th {
+            padding: 10px 20px; 
+			@include respond('phone'){
+				padding: 5px;
+			}
+			
+        }
+    }
+}
+
+.table{
+	&.book-overview{
+		tr{
+			th{
+				color: $headings-color;
+				font-size: 16px;
+				font-weight: 500;
+				width: 200px;
+			}
+			
+		}
+	}
+}
+
+.table-striped {
+    thead {
+        tr {
+            th {
+                padding-bottom: 15px!important;
+            }
+        }
+    }
+
+    tbody tr:nth-of-type(#{$table-striped-order}) {
+        background-color: $body-bg;
+    }
+
+    tfoot{
+        border-top: 2px solid $border-color;
+        tr{
+            th{
+                padding-top: 10px;
+            }
+        }
+    }
+}
+.table > :not(:first-child) {
+    border-top: 1px solid #dee2e6;
+}
+
+.check-tbl{
+	width:100%;
+	border:1px solid rgba(0, 0, 0, 0.125);
+	vertical-align:middle;
+	thead{
+		th{
+			font-size: 16px;
+			font-weight: 600;
+			padding: 15px 15px;
+			color: #fff;
+		    background: var(--secondary);
+		}
+	}
+	tbody{
+		td{
+			padding: 15px;
+			font-weight: 500;
+			color: var(--secondary);
+			img{
+				width: 100px;
+				border-radius:6px;
+			}
+		}
+	}
+	.product-item-close{ 
+		text-align: right;
+		a{
+			width: 40px;
+			height: 40px;
+			border-radius: 6px;
+			background: var(--bs-danger);
+			display: inline-block;
+			color: #fff;
+			text-align: center;
+			line-height: 40px;
+		}
+	}
+
+}
+ .product-item-img{
+	width:100px;
+	height:100px;
+} 
+
