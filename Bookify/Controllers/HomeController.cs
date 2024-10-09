@@ -2,35 +2,49 @@ using AutoMapper;
 using Bookify.Entities;
 using Bookify.Models;
 using Bookify.Repository.Contracts;
+using Bookify.Services.Contracts;
 using Bookify.Specifications;
 using Bookify.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 
 namespace Bookify.Controllers;
+
+[Authorize]
 public class HomeController : Controller
 {
+	private readonly Guid _basketId = Guid.Parse("BD59E9A8-7B75-419B-ACCD-E68DC42DFB57");
+
 	private readonly IGenericRepository<Book> _bookRepository;
 	private readonly IGenericRepository<Genre> _genreRepository;
 	private readonly IGenericRepository<Author> _authorRepository;
+	private readonly IShoppingCartService _shoppingCartService;
 	private readonly IMapper _mapper;
 
 	public HomeController(IGenericRepository<Book> bookRepository,
 						   IGenericRepository<Genre> genreRepository,
 						   IGenericRepository<Author> authorRepository,
-						   IMapper mapper)
+						   IMapper mapper,
+						   IShoppingCartService shoppingCartService)
 	{
 		_bookRepository = bookRepository;
 		_genreRepository = genreRepository;
 		_authorRepository = authorRepository;
 		_mapper = mapper;
+		_shoppingCartService = shoppingCartService;
 	}
 
 	public async Task<IActionResult> Index()
 	{
 		var allBooks = await _bookRepository.GetAllAsync();
+
 		var mappedBooks = _mapper.Map<IEnumerable<BookForListVM>>(allBooks);
+
 		ViewBag.AllGenres = await _genreRepository.GetAllAsync();
+
+		ViewBag.ShoppingCart = await _shoppingCartService.GetBasketAsync(_basketId);
+
 		return View(mappedBooks);
 	}
 
@@ -68,12 +82,13 @@ public class HomeController : Controller
 		return View(mappedResult);
 	}
 
+	[AllowAnonymous]
 	public IActionResult AboutUs()
 	{
 		return View();
 	}
 
-
+	[AllowAnonymous]
 	public IActionResult ContactUs()
 	{
 		return View();

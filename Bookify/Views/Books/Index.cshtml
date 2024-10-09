@@ -6,28 +6,81 @@
 
 <div class="container mt-4">
     <div class="row">
-        @foreach(var book in Model)
+        @foreach (var book in Model)
         {
-            <div class="col-md-3 mb-4">
-                <div class="card book-card mb-4">
-                    <a href="/Books/Details/@book.Id">
+                <div class="col-md-3 mb-4">
+                    <div class="card h-100 book-card" data-bs-toggle="modal" data-bs-target="#bookDetailModal"
+                         data-book-id="@book.Id"
+                         data-book-title="@book.Title"
+                         data-book-author="@book.Author"
+                         data-book-genre="@book.Genre"
+                         data-book-description="@book.Description"
+                         data-book-price="@book.Price.ToString("C")"
+                         data-book-picture="@book.PictureUrl">
                         <img src="@book.PictureUrl" class="card-img-top" alt="@book.Title">
-                    </a>
-                    <div class="card-body">
-                        <h5 class="card-title">@book.Title</h5>
-                        <p class="card-text text-muted">@book.Author - @book.Genre</p>
-                        <p class="card-description">@book.Description</p>
-                        <div class="price-section">
-                            <span class="book-price">@book.Price.ToString("C")</span>
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">@book.Title</h5>
+                            <p class="card-text text-muted">@book.Author - @book.Genre</p>
+                            <div class="price-section">
+                                <span class="book-price">@book.Price.ToString("C")</span>
+                            </div>
                         </div>
-                        <form asp-action="AddToBasket" asp-controller="ShoppingCart" method="post">
-                            <input type="hidden" name="productId" value="@book.Id" />
-                            <input type="hidden" name="quantity" value="1" />
-                            <button type="submit" class="btn btn-primary">Add to Basket</button>
-                        </form>
                     </div>
                 </div>
-            </div>
         }
     </div>
 </div>
+
+<!-- Modal for Book Details -->
+<div class="modal fade mt-5" id="bookDetailModal" tabindex="-1" aria-labelledby="bookDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookDetailModalLabel">Book Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <img id="modalBookImage" class="img-fluid mb-3" alt="Book Image">
+                <h5 id="modalBookTitle"></h5>
+                <p id="modalBookAuthor"></p>
+                <p id="modalBookGenre"></p>
+                <p id="modalBookDescription"></p>
+                <p id="modalBookPrice" class="font-weight-bold"></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var bookDetailModal = document.getElementById('bookDetailModal');
+                bookDetailModal.addEventListener('show.bs.modal', function (event) {
+                    var button = event.relatedTarget; // Button that triggered the modal
+
+                    // Extract info from data-* attributes
+                    var bookTitle = button.getAttribute('data-book-title');
+                    var bookAuthor = button.getAttribute('data-book-author');
+                    var bookGenre = button.getAttribute('data-book-genre');
+                    var bookDescription = button.getAttribute('data-book-description');
+                    var bookPrice = button.getAttribute('data-book-price');
+                    var bookPicture = button.getAttribute('data-book-picture');
+
+                    // Update the modal's content.
+                    var modalTitle = bookDetailModal.querySelector('#modalBookTitle');
+                    var modalAuthor = bookDetailModal.querySelector('#modalBookAuthor');
+                    var modalGenre = bookDetailModal.querySelector('#modalBookGenre');
+                    var modalDescription = bookDetailModal.querySelector('#modalBookDescription');
+                    var modalPrice = bookDetailModal.querySelector('#modalBookPrice');
+                    var modalImage = bookDetailModal.querySelector('#modalBookImage');
+
+                    modalTitle.textContent = bookTitle;
+                    modalAuthor.textContent = "Author: " + bookAuthor;
+                    modalGenre.textContent = "Genre: " + bookGenre;
+                    modalDescription.textContent = bookDescription;
+                    modalPrice.textContent = bookPrice;
+                    modalImage.setAttribute('src', bookPicture);
+                });
+            });
+        </script>
+}

@@ -11,51 +11,57 @@ namespace Bookify.Controllers;
 [Authorize]
 public class OrdersController : Controller
 {
-    private readonly IOrderService _orderService;
-    private readonly IGenericRepository<DeliveryMethod> _deliveryMethodRepository;
+	private readonly IOrderService _orderService;
+	private readonly IGenericRepository<DeliveryMethod> _deliveryMethodRepository;
 
-    public OrdersController(
-        IOrderService orderService,
-        IGenericRepository<DeliveryMethod> deliveryMethodRepository)
-    {
-        _orderService = orderService;
-        _deliveryMethodRepository = deliveryMethodRepository;
-    }
+	public OrdersController(
+		IOrderService orderService,
+		IGenericRepository<DeliveryMethod> deliveryMethodRepository)
+	{
+		_orderService = orderService;
+		_deliveryMethodRepository = deliveryMethodRepository;
+	}
 
-    [HttpGet]
-    public async Task<IActionResult> PlaceOrder(Guid shoppingCartId)
-    {
-        // send shoppingCartId to PlaceOrder View
+	public IActionResult GetAllUserOrders()
+	{
+		return View();
+	}
 
-        ViewBag.ShoppingCartId = shoppingCartId;
 
-        // load all delivery methods to PlaceOrder View
+	[HttpGet]
+	public async Task<IActionResult> PlaceOrder(Guid shoppingCartId)
+	{
+		// send shoppingCartId to PlaceOrder View
 
-        var deliveryMethods = new SelectList(
-            items: await _deliveryMethodRepository.GetAllAsync(),
-            dataValueField: "Id",
-            dataTextField: "Title"
-        );
+		ViewBag.ShoppingCartId = shoppingCartId;
 
-        ViewBag.DeliveryMethods = deliveryMethods;
+		// load all delivery methods to PlaceOrder View
 
-        return View();
-    }
+		var deliveryMethods = new SelectList(
+			items: await _deliveryMethodRepository.GetAllAsync(),
+			dataValueField: "Id",
+			dataTextField: "Title"
+		);
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> PlaceOrder(CreateOrderRequestVM createOrderRequestVM)
-    {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+		ViewBag.DeliveryMethods = deliveryMethods;
 
-        var createdOrder = await _orderService.CreateOrderAsync(createOrderRequestVM);
+		return View();
+	}
 
-        if (createdOrder == null)
-            return BadRequest("Unable to Create Order.");
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> PlaceOrder(CreateOrderRequestVM createOrderRequestVM)
+	{
+		if (!ModelState.IsValid)
+			return BadRequest(ModelState);
 
-        // order is created
+		var createdOrder = await _orderService.CreateOrderAsync(createOrderRequestVM);
 
-        return RedirectToAction("Checkout", "Checkout", new { orderId = createdOrder.Id });
-    }
+		if (createdOrder == null)
+			return BadRequest("Unable to Create Order.");
+
+		// order is created
+
+		return RedirectToAction("Checkout", "Checkout", new { orderId = createdOrder.Id });
+	}
 }

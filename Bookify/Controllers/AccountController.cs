@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Bookify.Entities;
+using Bookify.Helpers;
 using Bookify.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -16,15 +17,17 @@ public class AccountController : Controller
     private readonly UserManager<User> _userManager;
     private readonly SignInManager<User> _signManager;
     private readonly IMapper _mapper;
+    private readonly ILogger<AccountController> _logger;
 
     public AccountController(
         UserManager<User>
         userManager, SignInManager<User> signManager,
-        IMapper mapper)
+        IMapper mapper, ILogger<AccountController> logger)
     {
         _userManager = userManager;
         _signManager = signManager;
         _mapper = mapper;
+        _logger = logger;
     }
 
     public IActionResult Register()
@@ -41,10 +44,35 @@ public class AccountController : Controller
 
         var userForRegisteration = _mapper.Map<User>(registerModel);
 
+        string? pictureName = default;
+
+        if (registerModel.Picture?.Length > 0)
+        {
+            pictureName = Utility.UploadFile(registerModel.Picture, "Images");
+        }
+
+        userForRegisteration.Picture = pictureName;
+
         var registerResult = await _userManager.CreateAsync(userForRegisteration, registerModel.Password!);
 
         if (registerResult.Succeeded)
+        {
+            var claims = new List<Claim>
+            {
+                new (ClaimTypes.Email, userForRegisteration.Email!),
+                new (ClaimTypes.Name, registerModel.UserName !),
+                new ("FullName", $"{registerModel.FirstName !} {registerModel.LastName !}"),
+            };
+
+
+            foreach (var claim in claims)
+            {
+                await _userManager.AddClaimAsync(userForRegisteration, claim);
+            }
+
             return RedirectToAction("Login");
+        }
+
 
         foreach (var error in registerResult.Errors)
             ModelState.AddModelError(string.Empty, error.Description);
@@ -78,25 +106,28 @@ public class AccountController : Controller
         if (!loginResult.Succeeded)
             return View(loginModel);
 
-        var userClaims = new List<Claim>
+        var userClaims = await _userManager.GetClaimsAsync(userForAuthenticate);
+
+        if (userClaims?.Count > 0)
         {
-            new(ClaimTypes.GivenName, loginModel.Email),
-            new(ClaimTypes.Role, "User")
-        };
+            var claimsIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var claimsPrinciple = new ClaimsPrincipal(claimsIdentity);
 
-        var claimsIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
-        var claimsPrinciple = new ClaimsPrincipal(claimsIdentity);
+            await HttpContext.SignInAsync(
+                CookieAuthenticationDefaults.AuthenticationScheme,
+                claimsPrinciple,
+                new AuthenticationProperties
+                {
+                    IsPersistent = true,
+                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30),
+                });
 
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            claimsPrinciple,
-            new AuthenticationProperties
-            {
-                IsPersistent = true,
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30),
-            });
 
-        return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home");
+
+        }
+
+        return View(loginModel);
 
     }
 
@@ -105,7 +136,17 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        foreach (var cookie in Request.Cookies.Keys)
+        {
+            Response.Cookies.Delete(cookie);
+        }
         return RedirectToAction("Login");
+    }
+
+    [HttpGet]
+    public IActionResult Profile()
+    {
+        return View();
     }
 
 

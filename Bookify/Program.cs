@@ -18,34 +18,37 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddSingleton<IConnectionMultiplexer>(options =>
 {
-    var connection = builder.Configuration.GetConnectionString("RedisConnection");
-    return ConnectionMultiplexer.Connect(connection!);
+	var connection = builder.Configuration.GetConnectionString("RedisConnection");
+	return ConnectionMultiplexer.Connect(connection!);
 });
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 6;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = true;
-    options.Password.RequireLowercase = true;
-    options.User.RequireUniqueEmail = true;
+	options.Password.RequireDigit = true;
+	options.Password.RequiredLength = 6;
+	options.Password.RequireNonAlphanumeric = false;
+	options.Password.RequireUppercase = true;
+	options.Password.RequireLowercase = true;
+	options.User.RequireUniqueEmail = true;
 })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+	.AddEntityFrameworkStores<ApplicationDbContext>()
+	.AddDefaultTokenProviders();
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.AccessDeniedPath = "/Account/AccessDenied";
-        options.LoginPath = "/Account/Login";
-        options.LogoutPath = "/Account/Logout";
-    });
+	.AddCookie(options =>
+	{
+		options.AccessDeniedPath = "/Account/AccessDenied";
+		options.LoginPath = "/Account/Login";
+		options.LogoutPath = "/Account/Logout";
+		options.Cookie.Name = "LMS-COOKIE";
+	});
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
@@ -69,8 +72,8 @@ await dbContext.SeedDatabaseAsync();
 
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts();
+	app.UseExceptionHandler("/Home/Error");
+	app.UseHsts();
 }
 
 app.UseHttpsRedirection();
@@ -86,12 +89,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapAreaControllerRoute(
-    name: "admin",
-    areaName: "Admin",
-    pattern: "Admin/{controller=Home}/{action=Index}/{id?}");
+	name: "admin",
+	areaName: "Admin",
+	pattern: "Admin/{controller=Home}/{action=Index}/{id?}");
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+	name: "default",
+	pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();

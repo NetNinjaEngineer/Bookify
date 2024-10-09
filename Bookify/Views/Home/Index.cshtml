@@ -3,6 +3,39 @@
 @{
 	ViewData["Title"] = "Home Page";
 	var allGenres = (IEnumerable<Genre>)ViewBag.AllGenres;
+	var shoppingCart = (ShoppingCart)ViewBag.ShoppingCart;
+}
+
+@section LoadCartItems {
+
+	@foreach (var cartItem in shoppingCart.ShoppingCartItems)
+	{
+
+		<li class="cart-item">
+			<div class="media">
+				<div class="media-left">
+					<a href="books-detail.html">
+						<img alt="" class="media-object" src="@cartItem.PictureUrl">
+					</a>
+				</div>
+				<div class="media-body">
+					<h6 class="dz-title"><a href="books-detail.html" class="media-heading">@cartItem.Name</a></h6>
+					<span class="dz-price">@cartItem.Price.ToString("C")</span>
+					<span class="item-close">&times;</span>
+				</div>
+			</div>
+		</li>
+	}
+
+	<li class="cart-item text-center">
+		<h6 class="text-secondary">Total = @shoppingCart.ShoppingCartItems.Sum(x => x.Price * x.Quantity).ToString("C")</h6>
+	</li>
+	<li class="text-center d-flex">
+		<a asp-action="Index" asp-controller="ShoppingCart"  class="btn btn-sm btn-primary me-2 btnhover w-100">View Cart</a>
+
+		<a asp-action="PlaceOrder" asp-controller="Orders" asp-route-shoppingCartId="@shoppingCart.BasketId" class="btn btn-sm btn-outline-primary btnhover w-100">Place Order</a>
+	</li>
+
 }
 
 
@@ -40,9 +73,13 @@
 							<div class="dz-content">
 								<h4 class="title">@string.Join(' ', book.Title.Split(' ').Take(2)) ...</h4>
 								<span class="price">@book.Price.ToString("C")</span>
-								<a class="btn btn-secondary btnhover btnhover2">
-									<i class="flaticon-shopping-cart-1 m-r10"></i> Add to cart
-								</a>
+								<form asp-action="AddToBasket" asp-controller="ShoppingCart" method="post">
+									<input type="hidden" name="productId" value="@book.Id" />
+									<input type="hidden" name="quantity" value="1" />
+									<a class="btn btn-secondary btnhover btnhover2" role="button">
+										<i class="flaticon-shopping-cart-1 m-r10"></i> Add to cart
+									</a>
+								</form>
 							</div>
 						</div>
 					</div>

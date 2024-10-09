@@ -41,12 +41,13 @@ public class BooksController : Controller
 		return View(mappedBook);
 	}
 
+	[HttpPost]
 	public async Task<IActionResult> SearchBooks(string searchTerm)
 	{
 		var spec = new GetAllBooksWithGenresAndAuthorsSpecification(searchTerm);
 		var searchedBooks = await _bookRepository.GetAllWithSpecificationAsync(spec);
 		var mappedBooks = _mapper.Map<IEnumerable<BookForListVM>>(searchedBooks).ToList();
-		return View("Index", mappedBooks);
+		return Ok(mappedBooks);
 	}
 
 
