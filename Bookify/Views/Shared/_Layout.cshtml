@@ -1,45 +1,54 @@
 ﻿@using System.Security.Claims
 @inject IConfiguration configuration
+@inject IHttpContextAccessor contextAccessor
 @{
-	var baseUrl = configuration["BaseUrl"];
+	string? baseUrl = string.Empty;
+	if (contextAccessor.HttpContext!.Request.IsHttps)
+		baseUrl = configuration["BaseUrl"];
+	else
+		baseUrl = configuration["FullbackUrl"];
 }
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <!-- Meta -->
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="keywords" content="" />
-    <meta name="author" content="DexignZone" />
-    <meta name="robots" content="" />
-    <meta name="description" content="Bookland-Book Store Ecommerce Website" />
-    <meta property="og:title" content="Bookland-Book Store Ecommerce Website" />
-    <meta property="og:description" content="Bookland-Book Store Ecommerce Website" />
-    <meta property="og:image" content="https://makaanlelo.com/tf_products_007/bookland/xhtml/social-image.png" />
-    <meta name="format-detection" content="telephone=no">
+	<!-- Meta -->
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="keywords" content="" />
+	<meta name="author" content="DexignZone" />
+	<meta name="robots" content="" />
+	<meta name="description" content="Bookland-Book Store Ecommerce Website" />
+	<meta property="og:title" content="Bookland-Book Store Ecommerce Website" />
+	<meta property="og:description" content="Bookland-Book Store Ecommerce Website" />
+	<meta property="og:image" content="https://makaanlelo.com/tf_products_007/bookland/xhtml/social-image.png" />
+	<meta name="format-detection" content="telephone=no">
 
-    <!-- FAVICONS ICON -->
-    <link rel="icon" type="image/x-icon" href="~/images/favicon.png" />
+	<!-- FAVICONS ICON -->
+	<link rel="icon" type="image/x-icon" href="~/images/favicon.png" />
 
-    <!-- PAGE TITLE HERE -->
-    <title>Bookland Book Store Ecommerce Website</title>
+	<!-- PAGE TITLE HERE -->
+	<title>Bookland Book Store Ecommerce Website</title>
 
-    <!-- MOBILE SPECIFIC -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<!-- MOBILE SPECIFIC -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- STYLESHEETS -->
-    <link rel="stylesheet" type="text/css" href="~/vendor/bootstrap-select/css/bootstrap-select.min.css">
-    <link rel="stylesheet" type="text/css" href="~/icons/fontawesome/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="~/vendor/swiper/swiper-bundle.min.css">
-    <link rel="stylesheet" type="text/css" href="~/vendor/animate/animate.css">
-    <link rel="stylesheet" type="text/css" href="~/css/master.css">
-    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="~/css/bookcard.css" rel="stylesheet" />
-    <!-- GOOGLE FONTS-->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+	<!-- STYLESHEETS -->
+	<link rel="stylesheet" type="text/css" href="~/vendor/bootstrap-select/css/bootstrap-select.min.css">
+	<link rel="stylesheet" type="text/css" href="~/icons/fontawesome/css/all.min.css">
+	<link rel="stylesheet" type="text/css" href="~/vendor/swiper/swiper-bundle.min.css">
+	<link rel="stylesheet" type="text/css" href="~/vendor/animate/animate.css">
+	<link rel="stylesheet" type="text/css" href="~/css/master.css">
+	<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+	<link href="~/css/bookcard.css" rel="stylesheet" />
+	<!-- GOOGLE FONTS-->
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+		rel="stylesheet">
 </head>
+
 <body>
 
 	<div class="page-wraper">
@@ -62,7 +71,7 @@
 				<div class="container clearfix">
 
 					<div class="logo-header logo-dark">
-						<a asp-action="Index" asp-controller="Home" ><img src="~/images/logo.png" alt="logo"></a>
+						<a asp-action="Index" asp-controller="Home"><img src="~/images/logo.png" alt="logo"></a>
 					</div>
 
 
@@ -70,14 +79,24 @@
 						<div class="extra-cell">
 							<ul class="navbar-nav header-right">
 								<li class="nav-item">
-									<a class="nav-link" asp-action="Index" asp-controller="Wishlist" >
-										<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z" /></svg>
+									<a class="nav-link" asp-action="Index" asp-controller="Wishlist">
+										<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+											width="24px" fill="#000000">
+											<path d="M0 0h24v24H0V0z" fill="none" />
+											<path
+												d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z" />
+										</svg>
 										<span class="badge">21</span>
 									</a>
 								</li>
 								<li class="nav-item">
 									<button type="button" class="nav-link box cart-btn">
-										<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><path d="M0 0h24v24H0V0z" fill="none" /><path d="M15.55 13c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.37-.66-.11-1.48-.87-1.48H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.45zM6.16 6h12.15l-2.76 5H8.53L6.16 6zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" /></svg>
+										<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+											width="24px" fill="#000000">
+											<path d="M0 0h24v24H0V0z" fill="none" />
+											<path
+												d="M15.55 13c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.37-.66-.11-1.48-.87-1.48H5.21l-.94-2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.45zM6.16 6h12.15l-2.76 5H8.53L6.16 6zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" />
+										</svg>
 										<span class="badge">5</span>
 									</button>
 									<ul class="dropdown-menu cart-list">
@@ -86,7 +105,7 @@
 
 									</ul>
 								</li>
-								
+
 								<partial name="_UserIdentityInfoPartial" />
 
 							</ul>
@@ -99,7 +118,8 @@
 							<div class="input-group search-input">
 								@RenderSection("SelectGenre", required: false)
 
-								<input type="text" id="searchBooks" class="form-control" aria-label="Text input with dropdown button" placeholder="Search Books Here">
+								<input type="text" id="searchBooks" class="form-control"
+									aria-label="Text input with dropdown button" placeholder="Search Books Here">
 
 								<button class="btn" type="button"><i class="flaticon-loupe"></i></button>
 							</div>
@@ -119,7 +139,9 @@
 						</div>
 
 
-						<button class="navbar-toggler collapsed navicon justify-content-end" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+						<button class="navbar-toggler collapsed navicon justify-content-end" type="button"
+							data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+							aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
 							<span></span>
 							<span></span>
 							<span></span>
@@ -128,7 +150,8 @@
 
 						<div class="extra-nav">
 							<div class="extra-cell">
-								<a asp-action="ContactUs" asp-controller="Home" class="btn btn-primary btnhover">Get In Touch</a>
+								<a asp-action="ContactUs" asp-controller="Home" class="btn btn-primary btnhover">Get In
+									Touch</a>
 							</div>
 						</div>
 
@@ -139,17 +162,17 @@
 							</div>
 							<ul class="nav navbar-nav">
 								<li class="">
-									<a asp-action="Index" asp-controller="Home" ><span>Home</span></a>
+									<a asp-action="Index" asp-controller="Home"><span>Home</span></a>
 								</li>
-								<li><a asp-action="AboutUs" asp-controller="Home" ><span>About Us</span></a></li>
-								
-								<li><a asp-action="ContactUs" asp-controller="Home"><span>Contact Us</span></a></li>
-								
-								<li><a asp-action="Index" asp-controller="Books"><span>Books</span></a></li>
-								
-								<li><a asp-action="Index" asp-controller="Genres" ><span>Genres</span></a></li>
+								<li><a asp-action="AboutUs" asp-controller="Home"><span>About Us</span></a></li>
 
-								@if(!User.Identity!.IsAuthenticated)
+								<li><a asp-action="ContactUs" asp-controller="Home"><span>Contact Us</span></a></li>
+
+								<li><a asp-action="Index" asp-controller="Books"><span>Books</span></a></li>
+
+								<li><a asp-action="Index" asp-controller="Genres"><span>Genres</span></a></li>
+
+								@if (!User.Identity!.IsAuthenticated)
 								{
 									<li><a asp-action="Register" asp-controller="Account"><span>Register</span></a></li>
 
@@ -159,15 +182,19 @@
 							</ul>
 							<div class="dz-social-icon">
 								<ul>
-									<li><a class="fab fa-facebook-f" target="_blank" href="https://www.facebook.com/dexignzone"></a></li>
-									<li><a class="fab fa-twitter" target="_blank" href="https://twitter.com/dexignzones"></a></li>
-									<li><a class="fab fa-linkedin-in" target="_blank" href="https://www.linkedin.com/showcase/3686700/admin/"></a></li>
-									<li><a class="fab fa-instagram" target="_blank" href="https://www.instagram.com/website_templates__/"></a></li>
+									<li><a class="fab fa-facebook-f" target="_blank"
+											href="https://www.facebook.com/dexignzone"></a></li>
+									<li><a class="fab fa-twitter" target="_blank"
+											href="https://twitter.com/dexignzones"></a></li>
+									<li><a class="fab fa-linkedin-in" target="_blank"
+											href="https://www.linkedin.com/showcase/3686700/admin/"></a></li>
+									<li><a class="fab fa-instagram" target="_blank"
+											href="https://www.instagram.com/website_templates__/"></a></li>
 								</ul>
 							</div>
 						</div>
 
-				
+
 
 
 					</div>
@@ -202,13 +229,18 @@
 								<div class="footer-logo logo-white">
 									<a href="index.html"><img src="~/images/logo.png" alt=""></a>
 								</div>
-								<p class="text">Bookland is a Book Store Ecommerce Website Template by DexignZone lorem ipsum dolor sit</p>
+								<p class="text">Bookland is a Book Store Ecommerce Website Template by DexignZone lorem
+									ipsum dolor sit</p>
 								<div class="dz-social-icon style-1">
 									<ul>
-										<li><a href="https://www.facebook.com/dexignzone" target="_blank"><i class="fa-brands fa-facebook-f"></i></a></li>
-										<li><a href="https://www.youtube.com/channel/UCGL8V6uxNNMRrk3oZfVct1g" target="_blank"><i class="fa-brands fa-youtube"></i></a></li>
-										<li><a href="https://www.linkedin.com/showcase/3686700/admin/" target="_blank"><i class="fa-brands fa-linkedin"></i></a></li>
-										<li><a href="https://www.instagram.com/website_templates__/" target="_blank"><i class="fa-brands fa-instagram"></i></a></li>
+										<li><a href="https://www.facebook.com/dexignzone" target="_blank"><i
+													class="fa-brands fa-facebook-f"></i></a></li>
+										<li><a href="https://www.youtube.com/channel/UCGL8V6uxNNMRrk3oZfVct1g"
+												target="_blank"><i class="fa-brands fa-youtube"></i></a></li>
+										<li><a href="https://www.linkedin.com/showcase/3686700/admin/"
+												target="_blank"><i class="fa-brands fa-linkedin"></i></a></li>
+										<li><a href="https://www.instagram.com/website_templates__/" target="_blank"><i
+													class="fa-brands fa-instagram"></i></a></li>
 									</ul>
 								</div>
 							</div>
@@ -255,7 +287,7 @@
 								<ul>
 									<li>
 										<i class="flaticon-placeholder"></i>
-										<span>832  Thompson Drive, San Fransisco CA 94107,US</span>
+										<span>832 Thompson Drive, San Fransisco CA 94107,US</span>
 									</li>
 									<li>
 										<i class="flaticon-phone"></i>
@@ -283,10 +315,12 @@
 				<div class="container">
 					<div class="row fb-inner">
 						<div class="col-lg-6 col-md-12 text-start">
-							<p class="copyright-text">Bookland Book Store Ecommerce Website - © 2022 All Rights Reserved</p>
+							<p class="copyright-text">Bookland Book Store Ecommerce Website - © 2022 All Rights Reserved
+							</p>
 						</div>
 						<div class="col-lg-6 col-md-12 text-end">
-							<p>Made with <span class="heart"></span> by <a href="https://dexignzone.com/">DexignZone</a></p>
+							<p>Made with <span class="heart"></span> by <a href="https://dexignzone.com/">DexignZone</a>
+							</p>
 						</div>
 					</div>
 				</div>
@@ -331,7 +365,7 @@
 						listItem.className = 'list-group-item d-flex align-items-center';
 
 						listItem.innerHTML = `
-						
+
 							<div style="flex-grow: 1;">
 								<a href="/Books/Details/${book.id}" alt="${book.title}">
 									<img src="${book.pictureUrl}" alt="${book.title}" class="img-thumbnail" style="width: 50px; height: auto; margin-right: 10px;">
@@ -359,8 +393,9 @@
 	</script>
 
 
-    @await RenderSectionAsync("Scripts", required: false)
+	@await RenderSectionAsync("Scripts", required: false)
 
 
 </body>
+
 </html>

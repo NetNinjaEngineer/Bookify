@@ -63,6 +63,8 @@ builder.Configuration.Bind(nameof(StripeKeys), stripeKeys);
 
 StripeConfiguration.ApiKey = stripeKeys.SecretKey;
 
+builder.Services.AddHttpContextAccessor();
+
 
 var app = builder.Build();
 

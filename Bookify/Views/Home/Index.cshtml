@@ -23,7 +23,10 @@
 											<li><a href="javascript:void(0);">Napoleon Hill</a></li>
 											<li><a href="javascript:void(0);">Business & Strategy</a></li>
 										</ul>
-										<p class="text mb-0" data-swiper-parallax="-40">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal.</p>
+										<p class="text mb-0" data-swiper-parallax="-40">It is a long established fact
+											that a reader will be distracted by the readable content of a page when
+											looking at its layout. The point of using Lorem Ipsum is that it has a
+											more-or-less normal.</p>
 										<div class="price" data-swiper-parallax="-50">
 											<span class="price-num">$17.2</span>
 											<del>$15.25</del>
@@ -31,7 +34,8 @@
 										</div>
 										<div class="content-btn" data-swiper-parallax="-60">
 											<a class="btn btn-primary btnhover" href="books-grid-view.html">Buy Now</a>
-											<a class="btn border btnhover ms-4 text-white" href="books-detail.html">See Details</a>
+											<a class="btn border btnhover ms-4 text-white" href="books-detail.html">See
+												Details</a>
 										</div>
 									</div>
 									<div class="partner">
@@ -67,7 +71,10 @@
 											<li><a href="javascript:void(0);">Napoleon Hill</a></li>
 											<li><a href="javascript:void(0);">Business & Strategy</a></li>
 										</ul>
-										<p class="text mb-0" data-swiper-parallax="-40">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris</p>
+										<p class="text mb-0" data-swiper-parallax="-40">Lorem ipsum dolor sit amet,
+											consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+											dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+											ullamco laboris</p>
 										<div class="price" data-swiper-parallax="-50">
 											<span class="price-num">$9.5</span>
 											<del>$12.0</del>
@@ -75,7 +82,8 @@
 										</div>
 										<div class="content-btn" data-swiper-parallax="-50">
 											<a class="btn btn-primary btnhover" href="books-grid-view.html">Buy Now</a>
-											<a class="btn border btnhover ms-4 text-white" href="books-detail.html">See Details</a>
+											<a class="btn border btnhover ms-4 text-white" href="books-detail.html">See
+												Details</a>
 										</div>
 									</div>
 									<div class="partner">
@@ -237,38 +245,43 @@
 
 @section LoadCartItems {
 
-	@foreach (var cartItem in shoppingCart.ShoppingCartItems)
+	@if (shoppingCart?.ShoppingCartItems?.Count > 0)
 	{
+		@foreach (var cartItem in shoppingCart.ShoppingCartItems)
+		{
 
-		<li class="cart-item">
-			<div class="media">
-				<div class="media-left">
-					<a asp-action="Details" asp-controller="Books" asp-route-id="@cartItem.ProductId">
-						<img class="media-object" src="@cartItem.PictureUrl">
-					</a>
+			<li class="cart-item">
+				<div class="media">
+					<div class="media-left">
+						<a asp-action="Details" asp-controller="Books" asp-route-id="@cartItem.ProductId">
+							<img class="media-object" src="@cartItem.PictureUrl">
+						</a>
+					</div>
+					<div class="media-body">
+						<h6 class="dz-title"><a asp-action="Details" asp-controller="Books" asp-route-id="@cartItem.ProductId"
+								class="media-heading">@cartItem.Name</a></h6>
+						<span class="dz-price">@cartItem.Price.ToString("C")</span>
+						<span class="item-close">&times;</span>
+					</div>
 				</div>
-				<div class="media-body">
-					<h6 class="dz-title"><a asp-action="Details" asp-controller="Books" asp-route-id="@cartItem.ProductId" class="media-heading">@cartItem.Name</a></h6>
-					<span class="dz-price">@cartItem.Price.ToString("C")</span>
-					<span class="item-close">&times;</span>
-				</div>
-			</div>
+			</li>
+		}
+
+		<li class="cart-item text-center">
+			<h6 class="text-secondary">Total = @shoppingCart.ShoppingCartItems.Sum(x => x.Price * x.Quantity).ToString("C")</h6>
+		</li>
+		<li class="text-center d-flex">
+			<a asp-action="Index" asp-controller="ShoppingCart" class="btn btn-sm btn-primary me-2 btnhover w-100">View Cart</a>
+
+			<a asp-action="PlaceOrder" asp-controller="Orders" asp-route-shoppingCartId="@shoppingCart.BasketId"
+				class="btn btn-sm btn-outline-primary btnhover w-100">Place Order</a>
 		</li>
 	}
-
-	<li class="cart-item text-center">
-		<h6 class="text-secondary">Total = @shoppingCart.ShoppingCartItems.Sum(x => x.Price * x.Quantity).ToString("C")</h6>
-	</li>
-	<li class="text-center d-flex">
-		<a asp-action="Index" asp-controller="ShoppingCart"  class="btn btn-sm btn-primary me-2 btnhover w-100">View Cart</a>
-
-		<a asp-action="PlaceOrder" asp-controller="Orders" asp-route-shoppingCartId="@shoppingCart.BasketId" class="btn btn-sm btn-outline-primary btnhover w-100">Place Order</a>
-	</li>
 
 }
 
 
- @section SelectGenre {
+@section SelectGenre {
 	<select class="default-select">
 		<option value="@null">Category</option>
 
@@ -277,7 +290,7 @@
 			<option class="categorySectionGenreName" value="@item.Id">@item.GenreName</option>
 		}
 	</select>
- }
+}
 
 
 <section class="content-inner-1 bg-grey reccomend">
@@ -327,9 +340,9 @@
 
 
 
- @section FooterCategory {
+@section FooterCategory {
 	<!-- Footer Category -->
-	<div class="footer-category" >
+	<div class="footer-category">
 		<div class="container">
 			<div class="category-toggle">
 				<a href="javascript:void(0);" class="toggle-btn" id="allBooksCategories">Books categories</a>
@@ -338,7 +351,8 @@
 						<ul>
 							@foreach (var genre in allGenres)
 							{
-								<li><a asp-action="GetBooksWithRelatedGenre" asp-controller="Home" asp-route-id="@genre.Id"  >@genre.GenreName</a></li>
+								<li><a asp-action="GetBooksWithRelatedGenre" asp-controller="Home"
+										asp-route-id="@genre.Id">@genre.GenreName</a></li>
 							}
 						</ul>
 					</div>
@@ -347,9 +361,9 @@
 		</div>
 	</div>
 	<!-- Footer Category End -->
- }
+}
 
- @section Scripts {
+@section Scripts {
 	<script>
 		var swiper = new Swiper('.swiper-two', {
 			loop: true, // Enable looping
@@ -360,13 +374,13 @@
 
 
 
-			const selectCategoryGenreName = document.querySelector('.default-select');
-			selectCategoryGenreName.addEventListener('change', function() {
-				console.log(this.value)
-				const genreId = this.value;
-						window.open(`/Home/GetBooksWithRelatedGenre/${genreId}`, '_self');
-			})
+		const selectCategoryGenreName = document.querySelector('.default-select');
+		selectCategoryGenreName.addEventListener('change', function () {
+			console.log(this.value)
+			const genreId = this.value;
+			window.open(`/Home/GetBooksWithRelatedGenre/${genreId}`, '_self');
+		})
 
 	</script>
 
- }
+}
