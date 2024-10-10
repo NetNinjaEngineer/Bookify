@@ -10,4 +10,5 @@ public interface IShoppingCartService
     Task<ShoppingCart?> AddItemToBasketAsync(Guid basketId, string customerEmail, int productId, int quantity);
     Task<ShoppingCart?> RemoveItemFromBasketAsync(Guid basketId, Guid itemId);
     Task<ShoppingCart?> UpdateItemQuantityInBasketAsync(Guid basketId, Guid itemId, int quantity);
+    Task<int> GetItemsCountInBasketAsync(Guid basketId);
 }

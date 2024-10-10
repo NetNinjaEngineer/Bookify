@@ -75,6 +75,14 @@ public class ShoppingCartService(
         return basket.IsNull ? null : JsonSerializer.Deserialize<ShoppingCart>(basket!);
     }
 
+    public async Task<int> GetItemsCountInBasketAsync(Guid basketId)
+    {
+        var customerBasket = await GetBasketAsync(basketId);
+        if (customerBasket?.ShoppingCartItems?.Count > 0)
+            return customerBasket.ShoppingCartItems.Count;
+        return 0;
+    }
+
     public async Task<ShoppingCart?> RemoveItemFromBasketAsync(Guid basketId, Guid itemId)
     {
         var customerShoppingCart = await GetBasketAsync(basketId);

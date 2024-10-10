@@ -8,26 +8,30 @@ namespace Bookify.Controllers;
 [Authorize]
 public class ShoppingCartController : Controller
 {
-    private readonly Guid _basketId = Guid.Parse("BD59E9A8-7B75-419B-ACCD-E68DC42DFB57");
     private readonly IShoppingCartService _shoppingCartService;
     private readonly IUserService _userService;
     private readonly ILogger<ShoppingCartController> _logger;
     private readonly string _customerEmail;
+    private readonly IConfiguration _configuration;
 
     public ShoppingCartController(
         IShoppingCartService shoppingCartService,
         ILogger<ShoppingCartController> logger,
-        IUserService userService)
+        IUserService userService,
+        IConfiguration configuration)
     {
         _shoppingCartService = shoppingCartService;
         _logger = logger;
         _userService = userService;
         _customerEmail = _userService.UserEmail;
+        _configuration = configuration;
     }
+
+    private string GetShoppingCartId() => _configuration["shoppingCartKey"]!;
 
     public async Task<IActionResult> Index()
     {
-        var customerBasket = await _shoppingCartService.GetBasketAsync(_basketId);
+        var customerBasket = await _shoppingCartService.GetBasketAsync(Guid.Parse(GetShoppingCartId()));
         if (customerBasket == null)
             return View("EmptyBasket");
 
@@ -40,7 +44,7 @@ public class ShoppingCartController : Controller
     {
         try
         {
-            var updatedCustomerBasket = await _shoppingCartService.AddItemToBasketAsync(_basketId, _customerEmail, productId, quantity);
+            var updatedCustomerBasket = await _shoppingCartService.AddItemToBasketAsync(Guid.Parse(GetShoppingCartId()), _customerEmail, productId, quantity);
             if (updatedCustomerBasket == null)
             {
                 TempData["Error"] = "Failed to add item to the basket.";
@@ -61,7 +65,7 @@ public class ShoppingCartController : Controller
     {
         try
         {
-            var updatedCustomerBasket = await _shoppingCartService.RemoveItemFromBasketAsync(_basketId, itemId);
+            var updatedCustomerBasket = await _shoppingCartService.RemoveItemFromBasketAsync(Guid.Parse(GetShoppingCartId()), itemId);
             if (updatedCustomerBasket == null)
             {
                 TempData["Error"] = "No available basket.";
@@ -83,7 +87,7 @@ public class ShoppingCartController : Controller
     {
         try
         {
-            var updatedCustomerBasket = await _shoppingCartService.UpdateItemQuantityInBasketAsync(_basketId, itemId, quantity);
+            var updatedCustomerBasket = await _shoppingCartService.UpdateItemQuantityInBasketAsync(Guid.Parse(GetShoppingCartId()), itemId, quantity);
             if (updatedCustomerBasket == null)
             {
                 TempData["Error"] = "No basket available.";
@@ -103,7 +107,7 @@ public class ShoppingCartController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ClearBasket()
     {
-        await _shoppingCartService.DeleteBasketAsync(_basketId);
+        await _shoppingCartService.DeleteBasketAsync(Guid.Parse(GetShoppingCartId()));
         return RedirectToAction("Index");
     }
 }
