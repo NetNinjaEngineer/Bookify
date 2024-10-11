@@ -1,4 +1,5 @@
-﻿using Bookify.Entities;
+﻿using Bookify.Abstractions;
+using Bookify.Entities;
 using Bookify.Repository.Contracts;
 using Bookify.Services.Contracts;
 using Bookify.Specifications;
@@ -12,28 +13,35 @@ public class WishlistService : IWishlistService
 	private readonly IGenericRepository<Book> _bookRepository;
 	private readonly UserManager<User> _userManager;
 	private readonly IGenericRepository<WishlistItem> _wishlistItemsRepository;
+	private readonly IUserService _userService;
 
 	public WishlistService(
 		IGenericRepository<Wishlist> wishlistRepository,
 		IGenericRepository<Book> bookRepository,
 		UserManager<User> userManager,
-		IGenericRepository<WishlistItem> wishlistItemsRepository)
+		IGenericRepository<WishlistItem> wishlistItemsRepository,
+		IUserService userService)
 	{
 		_wishlistRepository = wishlistRepository;
 		_bookRepository = bookRepository;
 		_userManager = userManager;
 		_wishlistItemsRepository = wishlistItemsRepository;
+		_userService = userService;
 	}
 
-	public async Task<int> AddProductToWishlistOrRemoveItAsync(int productId, string customerEmail)
+	public async Task<Result<int>> AddProductToWishlistOrRemoveItAsync(int productId)
 	{
-		var customer = await _userManager.FindByEmailAsync(customerEmail)
-			?? throw new ArgumentNullException(nameof(customerEmail));
+		var authenticatedUserResult = await CheckIfUserIsAuthenticatedAsync(_userService.UserEmail);
 
-		var product = await _bookRepository.GetByIdAsync(productId)
-			?? throw new ArgumentNullException(nameof(productId));
+		if (authenticatedUserResult.IsFailure)
+			return Result<int>.Fail(authenticatedUserResult.Error);
 
-		var specification = new GetWishlistByUserIdSpecification(customer.Id);
+		var productExistsResult = await CheckIfProductExistsAsync(productId);
+
+		if (productExistsResult.IsFailure)
+			return Result<int>.Fail(productExistsResult.Error);
+
+		var specification = new GetWishlistByUserIdSpecification(authenticatedUserResult.Value.Id);
 
 		var customerWishlist = await _wishlistRepository.GetEntityBySpecificationAsync(specification);
 
@@ -44,61 +52,103 @@ public class WishlistService : IWishlistService
 		{
 			// remove from wishList
 			await RemoveProductFromWishlist(productId);
-			return productId;
+
+			// get removed id
+			return Result<int>.Ok(existedWishlistItem.BookId);
 		}
 
 		WishlistItem wishlistItem;
 
 		if (customerWishlist != null)
 		{
-			wishlistItem = new WishlistItem
-			{
-				DateAdded = DateTimeOffset.Now,
-				WishlistId = customerWishlist.Id,
-				BookId = product.Id,
-			};
+			wishlistItem = AddWishlistItem(productExistsResult.Value, customerWishlist);
 
-
-			_wishlistItemsRepository.Add(wishlistItem);
-
-			return wishlistItem.Id;
+			return Result<int>.Ok(wishlistItem.BookId);
 		}
 
-		var createdWishlist = await _wishlistRepository.GetByIdAsync(await CreateUserWishlistAsync(customerEmail));
+		var createdWishlistIdResult = await CreateUserWishlistAsync(_userService.UserEmail);
 
-		wishlistItem = new WishlistItem
+		if (createdWishlistIdResult.IsSuccess)
 		{
-			DateAdded = DateTime.UtcNow,
-			WishlistId = createdWishlist!.Id,
+			// creation success
+			var createdWishlist = await _wishlistRepository.GetByIdAsync(createdWishlistIdResult.Value);
+
+			// check creation if its null
+
+			if (createdWishlist is null)
+				return Result<int>.Fail("Error while creating wishlist.");
+
+			wishlistItem = AddWishlistItem(productExistsResult.Value, createdWishlist);
+
+			createdWishlist.WishlistItems.Add(wishlistItem);
+
+			await _wishlistRepository.CommitAsync();
+
+			return Result<int>.Ok(wishlistItem.BookId);
+		}
+
+		return Result<int>.Fail("Error while creating wishlist.");
+
+	}
+
+	private WishlistItem AddWishlistItem(Book product, Wishlist customerWishlist)
+	{
+		WishlistItem wishlistItem = new()
+		{
+			DateAdded = DateTimeOffset.Now,
+			WishlistId = customerWishlist.Id,
 			BookId = product.Id,
 		};
 
-		createdWishlist!.WishlistItems.Add(wishlistItem);
-
-		await _wishlistRepository.CommitAsync();
-
-		return wishlistItem.BookId;
+		_wishlistItemsRepository.Add(wishlistItem);
+		return wishlistItem;
 	}
 
-	public async Task<int> CreateUserWishlistAsync(string customerEmail)
+	public async Task<Result<int>> CreateUserWishlistAsync(string customerEmail)
 	{
 		var user = await _userManager.FindByEmailAsync(customerEmail);
 		if (user != null)
 		{
 			var userWishlist = new Wishlist { UserId = user.Id };
 			_wishlistRepository.Add(userWishlist);
-			return userWishlist.Id;
+			return Result<int>.Ok(userWishlist.Id);
 		}
 
-		throw new ArgumentNullException("User is not founded !!!");
+		return Result<int>.Fail("User is not founded !!!");
 	}
 
-	public async Task RemoveProductFromWishlist(int productId)
+	public async Task<Result> RemoveProductFromWishlist(int productId)
 	{
 		var wishlistItemToRemove = await _wishlistItemsRepository.GetEntityBySpecificationAsync(
 			new GetWishlistItemByProductIdSpecification(productId));
 
 		if (wishlistItemToRemove is not null)
+		{
 			_wishlistItemsRepository.Delete(wishlistItemToRemove);
+
+			return Result.Ok();
+		}
+
+		return Result.Fail("Wishlist Item is not found.");
+	}
+
+	private async Task<Result<User>> CheckIfUserIsAuthenticatedAsync(string customerEmail)
+	{
+		var customer = await _userManager.FindByEmailAsync(customerEmail);
+
+		if (customer is null)
+			return Result<User>.Fail("User is not authenticated.");
+
+		return Result<User>.Ok(customer);
+	}
+
+	private async Task<Result<Book>> CheckIfProductExistsAsync(int productId)
+	{
+		var book = await _bookRepository.GetByIdAsync(productId);
+
+		if (book is null)
+			return Result<Book>.Fail($"Book with id '{productId}' was not found.");
+
+		return Result<Book>.Ok(book);
 	}
 }
