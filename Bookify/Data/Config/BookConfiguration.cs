@@ -41,6 +41,10 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
 				editionLang => (EditonLanguage)Enum.Parse(typeof(EditonLanguage), editionLang)
 			);
 
+		builder.HasMany(x => x.Tags)
+			.WithMany(x => x.Books)
+			.UsingEntity<BookTag>();
+
 		builder.ToTable("Books");
 	}
 }
