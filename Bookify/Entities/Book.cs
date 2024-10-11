@@ -26,7 +26,7 @@ public class Book : BaseEntity
 
 	public string ISBN { get; set; } = string.Empty;
 
-	public EditonLanguage EditonLanguage { get; set; }
+	public EditionLanguage EditionLanguage { get; set; }
 
 	public string BookFormat { get; set; } = string.Empty;
 
@@ -43,5 +43,7 @@ public class Book : BaseEntity
 	public ICollection<Tag> Tags { get; set; } = [];
 
 	public ICollection<BookTag> BookTags { get; set; } = [];
+
+	public ICollection<Review> Reviews { get; set; } = [];
 
 }

@@ -1,0 +1,145 @@
+﻿.hero {
+    position: relative;
+    height: 100vh;
+    background: url('/images/log.jpg') no-repeat center center/cover;
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(157, 0, 255, .650);
+}
+
+.hero-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+}
+
+    .hero-content h1 {
+        font-size: 10rem;
+        font-weight: bold;
+    }
+
+.breadcrumb {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(255, 157, 0);
+    padding: 30px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+    .breadcrumb a {
+        text-decoration: none;
+        color: white;
+        font-weight: bold;
+    }
+
+        .breadcrumb a:hover {
+            color: blue;
+        }
+
+/* Container setup for the login section */
+.login-section {
+    display: flex;
+    justify-content: space-between;
+    padding: 50px;
+    background-color: #f9f9f9;
+}
+
+.container {
+    display: flex;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Styling for the two sections */
+.new-customer, .login {
+    width: 48%;
+    background: white;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+/* Section headers */
+.section-header {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.blue-header {
+    color: blue;
+}
+
+.section-description {
+    color: gray;
+    font-size: 1rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+
+/* Input fields */
+.input-field {
+    width: 100%;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+    .input-field:focus {
+        outline: none;
+        border-color: rgb(255, 149, 0);
+    }
+
+/* Buttons */
+.orange-button {
+    background-color: orange;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Forgot password link */
+.forgot-password {
+    display: block;
+    margin-top: 20px;
+    color: blue;
+    text-decoration: none;
+}
+
+    .forgot-password:hover {
+        text-decoration: underline;
+    }
+
+/* Media queries for responsiveness */
+@media screen and (max-width: 768px) {
+    .login-section {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .new-customer, .login {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}

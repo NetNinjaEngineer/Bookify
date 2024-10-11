@@ -1,0 +1,76 @@
+﻿.cont {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: url('/images/bg404.jpg') no-repeat center center/cover;
+}
+
+    .cont .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(157, 0, 255, .650); /* The last parameter is the transparency */
+    }
+
+    .cont .content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        color: white;
+    }
+
+        .cont .content h1 {
+            font-size: 10rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: white
+        }
+
+        .cont .content p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+        }
+
+.content .button {
+    background-color: rgb(255, 157, 0);
+    color: white;
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+    .content .button:hover {
+        background-color: #f1c40f;
+    }
+
+#line1,
+#line2,
+#line3 {
+    font-size: 2.625rem;
+    font-weight: 600
+}
+
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .content h1 {
+        font-size: 6rem;
+    }
+
+    .content p {
+        font-size: 1rem;
+    }
+
+    .content .button {
+        font-size: 1rem;
+        padding: 10px 20px;
+            
+    }
+}

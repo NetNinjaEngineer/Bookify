@@ -30,6 +30,8 @@ public class ApplicationDbContext(
 
 	public DbSet<Publisher> Publishers { get; set; }
 
+	public DbSet<Review> Reviews { get; set; }
+
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{

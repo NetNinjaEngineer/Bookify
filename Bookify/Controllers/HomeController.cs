@@ -88,7 +88,6 @@ public class HomeController : Controller
 		return View();
 	}
 
-	[AllowAnonymous]
 	public IActionResult ContactUs()
 	{
 		return View();

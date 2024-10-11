@@ -3,24 +3,47 @@
 @{
     ViewData["Title"] = "Login";
 }
-
-<h2>Login</h2>
-
-<form asp-action="Login" method="post">
-    <div class="form-group">
-        <label asp-for="Email"></label>
-        <input asp-for="Email" class="form-control" />
-        <span asp-validation-for="Email" class="text-danger"></span>
+<section class="hero">
+    <div class="overlay"></div>
+    <div class="hero-content">
+        <h1>LOG IN</h1>
     </div>
+</section>
 
-    <div class="form-group">
-        <label asp-for="Password"></label>
-        <input asp-for="Password" class="form-control" type="password" />
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
+<button class="breadcrumb">
+    <a style="text-decoration: none" asp-action="Index" asp-controller="Home">HOME</a> > LOG IN
+</button>
 
-    <button type="submit" class="btn btn-primary">Login</button>
-</form>
+<section class="login-section">
+    <form asp-action="Login" asp-controller="Account" method="post">
+        <div class="container">
+            <!-- New Customer Section -->
+            <div class="new-customer">
+                <h2 class="section-header blue-header">NEW CUSTOMER</h2>
+                <p class="section-description">
+                    By creating an account with our store, you will be able to move through the checkout process faster, store multiple shipping addresses, view and track your orders in your account and more.
+                </p>
+                <a asp-action="Register" asp-controller="Account" class="orange-button create-account-btn">CREATE NEW ACCOUNT</a>
+            </div>
+
+            <!-- Login Section -->
+            <div class="login">
+                <h2 class="section-header blue-header">LOGIN</h2>
+                <p class="section-description">
+                    If you have an account with us, please log in.
+                </p>
+                <label asp-for="Email">E-MAIL <span class="text-danger">*</span></label>
+                <input asp-for="Email" class="input-field" placeholder="Your Email ID">
+
+                <label asp-for="Password">PASSWORD <span class="text-danger">*</span></label>
+                <input asp-for="Password" class="input-field" placeholder="Type Password">
+
+                <button type="submit" class="orange-button login-btn">LOGIN</button>
+                <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
+        </div>
+    </form>
+</section>
 
 @section Scripts {
     @{

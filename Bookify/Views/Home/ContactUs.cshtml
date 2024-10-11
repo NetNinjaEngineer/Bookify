@@ -1,8 +1,53 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+	ViewData["Title"] = "Contact Us";
 }
 
+<section class="hero">
+    <div class="overlay"></div>
+    <div class="hero-content">
+        <h1>Contact</h1>
+    </div>
+</section>
 
-contact us
+<button class="breadcrumb">
+    <a href="index.html">HOME</a> > CONTACT
+</button>
+
+
+<!-- Google Map -->
+<section class="map">
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d13692.24257198759!2d30.920189279238566!3d30.564605299265874!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x14f7d28b013e7e3d%3A0x8fa85d1b4a2f1d2!2z2KzYp9mF2LnYsdmK2YLYp9iqINin2YTZgdmI2YjYp9iq!5e0!3m2!1sen!2seg!4v1696774588295!5m2!1sen!2seg"
+            width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+</section>
+
+<!-- Contact Details and Form Section -->
+<section class="contact-section">
+    <div class="contact-info">
+        <div class="info-overlay"></div>
+        <div class="info-content">
+            <h2>Get In Touch</h2>
+            <p>If you are interested in working with us, please get in touch.</p>
+            <div class="address">
+                <i class="icon">📍</i>
+                <strong>Our Address</strong><br>
+                Egypt, Minoufia, Shebin Elkom, 211 Paris Street
+            </div>
+            <div class="email">
+                <i class="icon">✉️</i>
+                <strong>Our Email</strong><br>
+                info@gmail.com<br>
+                services@gmail.com
+            </div>
+        </div>
+    </div>
+    <div class="contact-form">
+        <h2>Get In Touch With Us</h2>
+        <form action="#">
+            <input type="text" placeholder="Full Name" required>
+            <input type="email" placeholder="Email Address" required>
+            <input type="tel" placeholder="Phone No." required>
+            <textarea placeholder="Message" required></textarea>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</section>

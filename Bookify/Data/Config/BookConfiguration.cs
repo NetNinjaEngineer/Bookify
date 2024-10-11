@@ -35,10 +35,10 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
 			.OnDelete(DeleteBehavior.SetNull)
 			.IsRequired(false);
 
-		builder.Property(b => b.EditonLanguage)
+		builder.Property(b => b.EditionLanguage)
 			.HasConversion(
 				editionLang => editionLang.ToString(),
-				editionLang => (EditonLanguage)Enum.Parse(typeof(EditonLanguage), editionLang)
+				editionLang => (EditionLanguage)Enum.Parse(typeof(EditionLanguage), editionLang)
 			);
 
 		builder.HasMany(x => x.Tags)

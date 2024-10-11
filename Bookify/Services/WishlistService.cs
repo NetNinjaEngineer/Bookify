@@ -178,4 +178,21 @@ public class WishlistService : IWishlistService
 		return Result<WishlistForListVM>.Ok(mappedUserWishlist);
 
 	}
+
+	public async Task<Result<int>> GetUserWishlistItemsCountAsync()
+	{
+		var authenticatedResult = await CheckIfUserIsAuthenticatedAsync(_userService.UserEmail);
+
+		if (authenticatedResult.IsFailure)
+			return Result<int>.Fail(authenticatedResult.Error);
+
+		// get userWishlist
+		var userWishlist = await _wishlistRepo.GetUserWishlistAsync(authenticatedResult.Value.Id);
+
+		if (userWishlist is not null)
+			return Result<int>.Ok(userWishlist.WishlistItems.Count);
+
+		return Result<int>.Fail("Current User Not Have Wishlist Yet.");
+
+	}
 }

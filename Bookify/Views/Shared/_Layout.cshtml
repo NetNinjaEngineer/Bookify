@@ -3,6 +3,7 @@
 @inject IConfiguration configuration
 @inject IHttpContextAccessor contextAccessor
 @inject IShoppingCartService shoppingCartService
+@inject IWishlistService wishlistService
 @{
 	string? baseUrl = string.Empty;
 
@@ -12,7 +13,9 @@
 		baseUrl = configuration["FullbackUrl"];
 
 	int shoppingCartItemsCount = await
-	shoppingCartService.GetItemsCountInBasketAsync(Guid.Parse(configuration["shoppingCartKey"]));
+	shoppingCartService.GetItemsCountInBasketAsync(Guid.Parse(configuration["shoppingCartKey"]!));
+
+	var wishlistItemsCountResult = await wishlistService.GetUserWishlistItemsCountAsync();
 
 
 }
@@ -48,7 +51,11 @@
 	<link rel="stylesheet" type="text/css" href="~/vendor/animate/animate.css">
 	<link rel="stylesheet" type="text/css" href="~/css/master.css">
 	<link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
-	<link href="~/css/bookcard.css" rel="stylesheet" />
+    <link href="~/css/bookcard.css" rel="stylesheet" />
+    <link href="~/css/stylesignup.css" rel="stylesheet" />
+    <link href="~/css/style404.css" rel="stylesheet" />
+    <link href="~/css/stylecontact.css" rel="stylesheet" />
+
 	<!-- GOOGLE FONTS-->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -77,17 +84,24 @@
 					<div class="extra-nav">
 						<div class="extra-cell">
 							<ul class="navbar-nav header-right">
-								<li class="nav-item">
-									<a class="nav-link" asp-action="Index" asp-controller="Wishlist">
-										<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
+							
+							@if(User.Identity!.IsAuthenticated)
+							{
+									<li class="nav-item">
+										<a class="nav-link" asp-action="Index" asp-controller="Wishlist">
+											<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
 											width="24px" fill="#000000">
-											<path d="M0 0h24v24H0V0z" fill="none" />
-											<path
+												<path d="M0 0h24v24H0V0z" fill="none" />
+												<path
 												d="M16.5 3c-1.74 0-3.41.81-4.5 2.09C10.91 3.81 9.24 3 7.5 3 4.42 3 2 5.42 2 8.5c0 3.78 3.4 6.86 8.55 11.54L12 21.35l1.45-1.32C18.6 15.36 22 12.28 22 8.5 22 5.42 19.58 3 16.5 3zm-4.4 15.55l-.1.1-.1-.1C7.14 14.24 4 11.39 4 8.5 4 6.5 5.5 5 7.5 5c1.54 0 3.04.99 3.57 2.36h1.87C13.46 5.99 14.96 5 16.5 5c2 0 3.5 1.5 3.5 3.5 0 2.89-3.14 5.74-7.9 10.05z" />
-										</svg>
-										<span class="badge">21</span>
-									</a>
+											</svg>
+											@if (wishlistItemsCountResult.IsSuccess)
+											{
+												<span class="badge">@wishlistItemsCountResult.Value</span>
+											}
+										</a>
 								</li>
+
 								<li class="nav-item">
 									<button type="button" class="nav-link box cart-btn">
 										<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24"
@@ -104,6 +118,7 @@
 
 									</ul>
 								</li>
+							}
 
 								<partial name="_UserIdentityInfoPartial" />
 
@@ -343,6 +358,9 @@
 	<script src="~/js/dz.carousel.js"></script><!-- DZ CAROUSEL JS -->
 	<script src="~/js/dz.ajax.js"></script><!-- AJAX -->
 	<script src="~/js/custom.js"></script><!-- CUSTOM JS -->
+    <script src="~/js/scriptsignup.js"></script>
+	<script src="~/js/scriptlogin.js"></script>
+	<script src="~/js/script404.js"></script>
 
 	<script>
 		document.getElementById('searchBooks').addEventListener('input', function () {
