@@ -45,6 +45,12 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
 			.WithMany(x => x.Books)
 			.UsingEntity<BookTag>();
 
+		builder.HasOne(x => x.Publisher)
+			.WithMany(x => x.Books)
+			.HasForeignKey(x => x.PublisherId)
+			.OnDelete(DeleteBehavior.SetNull)
+			.IsRequired(false);
+
 		builder.ToTable("Books");
 	}
 }

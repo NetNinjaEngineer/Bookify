@@ -28,6 +28,8 @@ public class ApplicationDbContext(
 
 	public DbSet<Tag> Tags { get; set; }
 
+	public DbSet<Publisher> Publishers { get; set; }
+
 
 	protected override void OnModelCreating(ModelBuilder modelBuilder)
 	{

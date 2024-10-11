@@ -36,6 +36,10 @@ public class Book : BaseEntity
 
 	public DateTimeOffset DatePublished { get; set; } = DateTimeOffset.Now;
 
+	public int? PublisherId { get; set; }
+
+	public Publisher? Publisher { get; set; }
+
 	public ICollection<Tag> Tags { get; set; } = [];
 
 	public ICollection<BookTag> BookTags { get; set; } = [];
