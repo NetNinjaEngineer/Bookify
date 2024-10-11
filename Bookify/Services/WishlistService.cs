@@ -1,8 +1,11 @@
-﻿using Bookify.Abstractions;
+﻿using AutoMapper;
+using Bookify.Abstractions;
+using Bookify.Data;
 using Bookify.Entities;
 using Bookify.Repository.Contracts;
 using Bookify.Services.Contracts;
 using Bookify.Specifications;
+using Bookify.ViewModels;
 using Microsoft.AspNetCore.Identity;
 
 namespace Bookify.Services;
@@ -14,19 +17,26 @@ public class WishlistService : IWishlistService
 	private readonly UserManager<User> _userManager;
 	private readonly IGenericRepository<WishlistItem> _wishlistItemsRepository;
 	private readonly IUserService _userService;
+	private readonly IMapper _mapper;
+	private readonly IWishlistRepository _wishlistRepo;
 
 	public WishlistService(
 		IGenericRepository<Wishlist> wishlistRepository,
 		IGenericRepository<Book> bookRepository,
 		UserManager<User> userManager,
 		IGenericRepository<WishlistItem> wishlistItemsRepository,
-		IUserService userService)
+		IUserService userService,
+		IMapper mapper,
+		ApplicationDbContext applicationDbContext,
+		IWishlistRepository wishlistRepo)
 	{
 		_wishlistRepository = wishlistRepository;
 		_bookRepository = bookRepository;
 		_userManager = userManager;
 		_wishlistItemsRepository = wishlistItemsRepository;
 		_userService = userService;
+		_mapper = mapper;
+		_wishlistRepo = wishlistRepo;
 	}
 
 	public async Task<Result<int>> AddProductToWishlistOrRemoveItAsync(int productId)
@@ -150,5 +160,22 @@ public class WishlistService : IWishlistService
 			return Result<Book>.Fail($"Book with id '{productId}' was not found.");
 
 		return Result<Book>.Ok(book);
+	}
+
+	public async Task<Result<WishlistForListVM>> GetUserWishlistAsync()
+	{
+		// check if user is authenticated 
+		var currentUserResult = await CheckIfUserIsAuthenticatedAsync(_userService.UserEmail);
+
+		if (currentUserResult.IsFailure)
+			return Result<WishlistForListVM>.Fail(currentUserResult.Error);
+
+		// get userWishlist
+		var userWishlist = await _wishlistRepo.GetUserWishlistAsync(currentUserResult.Value.Id);
+
+		var mappedUserWishlist = _mapper.Map<WishlistForListVM>(userWishlist);
+
+		return Result<WishlistForListVM>.Ok(mappedUserWishlist);
+
 	}
 }

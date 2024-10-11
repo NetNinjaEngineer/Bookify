@@ -58,15 +58,16 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 builder.Services.AddScoped<IUserService, UserService>();
 
-var stripeKeys = new StripeKeys();
-builder.Configuration.Bind(nameof(StripeKeys), stripeKeys);
-
-StripeConfiguration.ApiKey = stripeKeys.SecretKey;
-
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IWishlistService, WishlistService>();
 
+builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
+
+var stripeKeys = new StripeKeys();
+builder.Configuration.Bind(nameof(StripeKeys), stripeKeys);
+
+StripeConfiguration.ApiKey = stripeKeys.SecretKey;
 
 var app = builder.Build();
 

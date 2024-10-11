@@ -4,26 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Bookify.Controllers;
 [Authorize]
-public class WishlistController : Controller
+public class WishlistController(
+	IWishlistService wishlistService,
+	ILogger<WishlistController> logger) : Controller
 {
-	private readonly IWishlistService _wishlistService;
-	private readonly IUserService _userService;
-
-	public WishlistController(IWishlistService wishlistService, IUserService userService)
-	{
-		_wishlistService = wishlistService;
-		_userService = userService;
-	}
+	private readonly IWishlistService _wishlistService = wishlistService;
+	private readonly ILogger<WishlistController> _logger = logger;
 
 	[HttpPost]
 	public async Task<IActionResult> AddProductToWishlist(int productId)
 	{
-		var productIdCreated = await _wishlistService.AddProductToWishlistOrRemoveItAsync(productId, _userService.UserEmail);
+		var idAddedOrRemoved = await _wishlistService.AddProductToWishlistOrRemoveItAsync(productId);
 		return RedirectToAction(nameof(Index));
 	}
 
-	public IActionResult Index()
+	public async Task<IActionResult> Index()
 	{
+		var userWishlist = await _wishlistService.GetUserWishlistAsync();
+
 		return View();
 	}
 }

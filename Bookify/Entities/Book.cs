@@ -2,17 +2,38 @@
 
 public class Book : BaseEntity
 {
-    public string? Title { get; set; }
-    public string? Description { get; set; }
-    public string? ImageName { get; set; }
-    public decimal Price { get; set; }
-    public int? GenreId { get; set; }
-    public Genre? Genre { get; set; }
-    public int? AuthorId { get; set; }
-    public Author? Author { get; set; }
-    public int StockQuantity { get; set; }
+	public string? Title { get; set; }
 
-    public int? WishlistId { get; set; }
+	public string? Description { get; set; }
 
-    public Wishlist? Wishlist { get; set; }
+	public string? ImageName { get; set; }
+
+	public decimal Price { get; set; }
+
+	public int? GenreId { get; set; }
+
+	public Genre? Genre { get; set; }
+
+	public int? AuthorId { get; set; }
+
+	public Author? Author { get; set; }
+
+	public int StockQuantity { get; set; }
+
+	public int? WishlistId { get; set; }
+
+	public Wishlist? Wishlist { get; set; }
+
+	public string ISBN { get; set; } = string.Empty;
+
+	public EditonLanguage EditonLanguage { get; set; }
+
+	public string BookFormat { get; set; } = string.Empty;
+
+	public int Pages { get; set; }
+
+	public int Lessons { get; set; }
+
+	public DateTimeOffset DatePublished { get; set; } = DateTimeOffset.Now;
+
 }

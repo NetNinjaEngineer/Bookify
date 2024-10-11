@@ -2,7 +2,11 @@
 
 namespace Bookify.Specifications;
 
-public class GetWishlistItemByProductIdSpecification(int productId)
-	: BaseSpecification<WishlistItem>(wlItem => wlItem.BookId == productId)
+public class GetWishlistItemByProductIdSpecification : BaseSpecification<WishlistItem>
 {
+	public GetWishlistItemByProductIdSpecification(int productId) : base(wlItem => wlItem.BookId == productId)
+	{
+		AddIncludes(wlItem => wlItem.Book);
+		AddIncludes(wlItem => wlItem.Wishlist);
+	}
 }

@@ -35,6 +35,12 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
 			.OnDelete(DeleteBehavior.SetNull)
 			.IsRequired(false);
 
+		builder.Property(b => b.EditonLanguage)
+			.HasConversion(
+				editionLang => editionLang.ToString(),
+				editionLang => (EditonLanguage)Enum.Parse(typeof(EditonLanguage), editionLang)
+			);
+
 		builder.ToTable("Books");
 	}
 }

@@ -6,9 +6,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bookify.Repository;
 
-public class GenericRepository<TEntity>(ApplicationDbContext context)
+public class GenericRepository<TEntity>
 	: IGenericRepository<TEntity> where TEntity : BaseEntity
 {
+	protected readonly ApplicationDbContext context;
+
+	public GenericRepository(ApplicationDbContext context)
+	{
+		this.context = context;
+	}
+
 	public void Add(TEntity entity)
 	{
 		context.Add(entity);
