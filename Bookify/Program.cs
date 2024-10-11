@@ -65,6 +65,8 @@ StripeConfiguration.ApiKey = stripeKeys.SecretKey;
 
 builder.Services.AddHttpContextAccessor();
 
+builder.Services.AddScoped<IWishlistService, WishlistService>();
+
 
 var app = builder.Build();
 

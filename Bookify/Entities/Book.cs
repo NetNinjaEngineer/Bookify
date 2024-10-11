@@ -11,4 +11,8 @@ public class Book : BaseEntity
     public int? AuthorId { get; set; }
     public Author? Author { get; set; }
     public int StockQuantity { get; set; }
+
+    public int? WishlistId { get; set; }
+
+    public Wishlist? Wishlist { get; set; }
 }
