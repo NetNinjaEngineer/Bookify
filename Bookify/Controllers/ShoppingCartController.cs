@@ -1,114 +1,144 @@
 ﻿using AspNetCoreHero.ToastNotification.Abstractions;
-using Bookify.Exceptions;
 using Bookify.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Bookify.Controllers;
-
-[Authorize]
-public class ShoppingCartController : Controller
+namespace Bookify.Controllers
 {
-	private readonly IShoppingCartService _shoppingCartService;
-	private readonly IUserService _userService;
-	private readonly ILogger<ShoppingCartController> _logger;
-	private readonly string _customerEmail;
-	private readonly IConfiguration _configuration;
-	private readonly INotyfService _notyfService;
-
-	public ShoppingCartController(
-		IShoppingCartService shoppingCartService,
-		ILogger<ShoppingCartController> logger,
-		IUserService userService,
-		IConfiguration configuration,
-		INotyfService notyfService)
+	[Authorize]
+	public class ShoppingCartController : Controller
 	{
-		_shoppingCartService = shoppingCartService;
-		_logger = logger;
-		_userService = userService;
-		_customerEmail = _userService.UserEmail;
-		_configuration = configuration;
-		_notyfService = notyfService;
-	}
+		private readonly IShoppingCartService _shoppingCartService;
+		private readonly IUserService _userService;
+		private readonly ILogger<ShoppingCartController> _logger;
+		private readonly IConfiguration _configuration;
+		private readonly INotyfService _notyfService;
 
-	private string GetShoppingCartId() => _configuration["shoppingCartKey"]!;
-
-	public async Task<IActionResult> Index()
-	{
-		var customerBasket = await _shoppingCartService.GetBasketAsync(Guid.Parse(GetShoppingCartId()));
-		if (customerBasket == null)
-			return View("EmptyBasket");
-
-		return View(customerBasket);
-	}
-
-
-	[HttpPost("addToBasket")]
-	[ValidateAntiForgeryToken]
-	public async Task<IActionResult> AddToBasket(int productId, int quantity)
-	{
-		var updatedCustomerBasket = await _shoppingCartService.AddItemToBasketAsync(
-			Guid.Parse(GetShoppingCartId()), _customerEmail, productId, quantity);
-
-		if (updatedCustomerBasket.IsSuccess)
+		public ShoppingCartController(
+			IShoppingCartService shoppingCartService,
+			IUserService userService,
+			ILogger<ShoppingCartController> logger,
+			IConfiguration configuration,
+			INotyfService notyfService)
 		{
-			_notyfService.Success("Item added to the basket successfully.");
+			_shoppingCartService = shoppingCartService;
+			_userService = userService;
+			_logger = logger;
+			_configuration = configuration;
+			_notyfService = notyfService;
+		}
+
+		private Guid GetShoppingCartId()
+		{
+			var shoppingCartIdString = _configuration["ShoppingCartKey"];
+			if (Guid.TryParse(shoppingCartIdString, out var shoppingCartId))
+			{
+				return shoppingCartId;
+			}
+			else
+			{
+				var newBasketId = Guid.NewGuid();
+				_logger.LogWarning("Invalid ShoppingCartKey in configuration. Generated new Basket ID: {BasketId}", newBasketId);
+				return newBasketId;
+			}
+		}
+
+		public async Task<IActionResult> Index()
+		{
+			var basketId = GetShoppingCartId();
+			var customerBasketResult = await _shoppingCartService.GetBasketAsync(basketId);
+
+			if (!customerBasketResult.IsSuccess || customerBasketResult.Value == null || customerBasketResult.Value.ShoppingCartItems.Count == 0)
+			{
+				return View("EmptyBasket");
+			}
+
+			return View(customerBasketResult.Value);
+		}
+
+		[HttpPost("addToBasket")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> AddToBasket(int productId, int quantity)
+		{
+			var basketId = GetShoppingCartId();
+			var customerEmail = _userService.UserEmail;
+
+			var addItemResult = await _shoppingCartService.AddItemToBasketAsync(basketId, customerEmail, productId, quantity);
+
+			if (addItemResult.IsSuccess)
+			{
+				_notyfService.Success("Item added to the basket successfully.");
+			}
+			else
+			{
+				_notyfService.Error(addItemResult.Error ?? "Failed to add item to the basket.");
+				_logger.LogError("AddToBasket failed: {Error}", addItemResult.Error);
+			}
+
 			return RedirectToAction(nameof(Index));
 		}
 
-		_notyfService.Error(updatedCustomerBasket.Error ?? "Failed to add item to the basket.");
-		return RedirectToAction(nameof(Index));
-	}
-
-	[HttpPost("removeItem")]
-	[ValidateAntiForgeryToken]
-	public async Task<IActionResult> RemoveItem(Guid itemId)
-	{
-		try
+		[HttpPost("removeItem")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> RemoveItem(Guid itemId)
 		{
-			var updatedCustomerBasket = await _shoppingCartService.RemoveItemFromBasketAsync(Guid.Parse(GetShoppingCartId()), itemId);
-			if (updatedCustomerBasket == null)
+			var basketId = GetShoppingCartId();
+
+			var removeItemResult = await _shoppingCartService.RemoveItemFromBasketAsync(basketId, itemId);
+
+			if (removeItemResult.IsSuccess)
 			{
-				TempData["Error"] = "No available basket.";
-				return RedirectToAction("Index");
+				_notyfService.Success("Item removed from the basket successfully.");
+			}
+			else
+			{
+				_notyfService.Error(removeItemResult.Error ?? "Failed to remove item from the basket.");
+				_logger.LogError("RemoveItem failed: {Error}", removeItemResult.Error);
 			}
 
-			return RedirectToAction("Index");
+			return RedirectToAction(nameof(Index));
 		}
-		catch (BasketItemNotFoundException ex)
-		{
-			TempData["Error"] = ex.Message;
-			return RedirectToAction("Index");
-		}
-	}
 
-	[HttpPost("updateQuantity")]
-	[ValidateAntiForgeryToken]
-	public async Task<IActionResult> UpdateQuantity(Guid itemId, int quantity)
-	{
-		try
+		[HttpPost("updateQuantity")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> UpdateQuantity(Guid itemId, int quantity)
 		{
-			var updatedCustomerBasket = await _shoppingCartService.UpdateItemQuantityInBasketAsync(Guid.Parse(GetShoppingCartId()), itemId, quantity);
-			if (updatedCustomerBasket == null)
+			var basketId = GetShoppingCartId();
+
+			var updateQuantityResult = await _shoppingCartService.UpdateItemQuantityInBasketAsync(basketId, itemId, quantity);
+
+			if (updateQuantityResult.IsSuccess)
 			{
-				TempData["Error"] = "No basket available.";
-				return RedirectToAction("Index");
+				_notyfService.Success("Item quantity updated successfully.");
+			}
+			else
+			{
+				_notyfService.Error(updateQuantityResult.Error ?? "Failed to update item quantity.");
+				_logger.LogError("UpdateQuantity failed: {Error}", updateQuantityResult.Error);
 			}
 
-			return RedirectToAction("Index");
+			return RedirectToAction(nameof(Index));
 		}
-		catch (BasketItemNotFoundException ex)
-		{
-			TempData["Error"] = ex.Message;
-			return RedirectToAction("Index");
-		}
-	}
 
-	[HttpPost("clearBasket")]
-	[ValidateAntiForgeryToken]
-	public async Task<IActionResult> ClearBasket()
-	{
-		await _shoppingCartService.DeleteBasketAsync(Guid.Parse(GetShoppingCartId()));
-		return RedirectToAction("Index");
+		[HttpPost("clearBasket")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> ClearBasket()
+		{
+			var basketId = GetShoppingCartId();
+
+			var clearBasketResult = await _shoppingCartService.DeleteBasketAsync(basketId);
+
+			if (clearBasketResult.IsSuccess)
+			{
+				_notyfService.Success("Basket cleared successfully.");
+			}
+			else
+			{
+				_notyfService.Error(clearBasketResult.Error ?? "Failed to clear the basket.");
+				_logger.LogError("ClearBasket failed: {Error}", clearBasketResult.Error);
+			}
+
+			return RedirectToAction(nameof(Index));
+		}
 	}
 }

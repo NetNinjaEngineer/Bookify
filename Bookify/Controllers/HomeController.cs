@@ -14,25 +14,29 @@ namespace Bookify.Controllers;
 [Authorize]
 public class HomeController : Controller
 {
-	private readonly Guid _basketId = Guid.Parse("BD59E9A8-7B75-419B-ACCD-E68DC42DFB57");
+	private readonly Guid _basketId;
 
 	private readonly IGenericRepository<Book> _bookRepository;
 	private readonly IGenericRepository<Genre> _genreRepository;
 	private readonly IGenericRepository<Author> _authorRepository;
 	private readonly IShoppingCartService _shoppingCartService;
 	private readonly IMapper _mapper;
+	private readonly IConfiguration _config;
 
 	public HomeController(IGenericRepository<Book> bookRepository,
 						   IGenericRepository<Genre> genreRepository,
 						   IGenericRepository<Author> authorRepository,
 						   IMapper mapper,
-						   IShoppingCartService shoppingCartService)
+						   IShoppingCartService shoppingCartService,
+						   IConfiguration config)
 	{
 		_bookRepository = bookRepository;
 		_genreRepository = genreRepository;
 		_authorRepository = authorRepository;
 		_mapper = mapper;
 		_shoppingCartService = shoppingCartService;
+		_config = config;
+		_basketId = Guid.Parse(_config["shoppingCartKey"]!);
 	}
 
 	public async Task<IActionResult> Index()
@@ -43,7 +47,10 @@ public class HomeController : Controller
 
 		ViewBag.AllGenres = await _genreRepository.GetAllAsync();
 
-		ViewBag.ShoppingCart = await _shoppingCartService.GetBasketAsync(_basketId);
+		var basketResult = await _shoppingCartService.GetBasketAsync(_basketId);
+
+		if (basketResult.IsSuccess)
+			ViewBag.ShoppingCart = basketResult.Value;
 
 		return View(mappedBooks);
 	}
