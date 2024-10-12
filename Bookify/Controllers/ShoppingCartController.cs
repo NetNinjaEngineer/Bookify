@@ -38,25 +38,20 @@ public class ShoppingCartController : Controller
         return View(customerBasket);
     }
 
+
+    // solve problems with this method
     [HttpPost("addToBasket")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AddToBasket(int productId, int quantity)
     {
-        try
-        {
-            var updatedCustomerBasket = await _shoppingCartService.AddItemToBasketAsync(Guid.Parse(GetShoppingCartId()), _customerEmail, productId, quantity);
-            if (updatedCustomerBasket == null)
-            {
-                TempData["Error"] = "Failed to add item to the basket.";
-                return RedirectToAction("Index");
-            }
+        var updatedCustomerBasket = await _shoppingCartService.AddItemToBasketAsync(Guid.Parse(GetShoppingCartId()), _customerEmail, productId, quantity);
 
-            return RedirectToAction("Index");
-        }
-        catch (Exception)
-        {
-            return View("Error");
-        }
+        if (updatedCustomerBasket.IsSuccess)
+            return RedirectToAction(nameof(Index));
+
+        _logger.LogError(updatedCustomerBasket.Error);
+
+        return View(); // throws error should be handled again
     }
 
     [HttpPost("removeItem")]

@@ -1,5 +1,65 @@
-﻿
+﻿@model WishlistForListVM
 @{
+    ViewData["Title"] = "Wishlist";
 }
 
-my wishlist
+<!-- inner page banner -->
+<div class="dz-bnr-inr overlay-secondary-dark dz-bnr-inr-sm" style="background-image:url(/images/background/bg3.jpg);">
+	<div class="container">
+		<div class="dz-bnr-inr-entry">
+			<h1>Wishlist</h1>
+			<nav aria-label="breadcrumb" class="breadcrumb-row">
+				<ul class="breadcrumb">
+					<li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home"> Home</a></li>
+					<li class="breadcrumb-item">Wishlist</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+
+
+@if(Model.WishlistItemVMs?.Count > 0)
+{
+	<!-- inner page banner End-->
+	<div class="content-inner-1">
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-12">
+					<div class="table-responsive">
+						<table class="table check-tbl">
+							<thead>
+								<tr>
+									<th>Product</th>
+									<th>Product name</th>
+									<th>Unit Price</th>
+									<th>Add to cart </th>
+									<th>Close</th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in Model.WishlistItemVMs)
+								{
+									<tr>
+										<td class="product-item-img"><img src="@item.ProductImageUrl" alt=""></td>
+										<td class="product-item-name">@item.ProductName</td>
+										<td class="product-item-price">@item.Price.ToString("C")</td>
+										<td class="product-item-totle">
+											<form asp-action="AddToBasket" asp-controller="ShoppingCart" method="post">
+												<input type="hidden" name="quantity" value="1" />
+												<input type="hidden" name="productId" value="@item.ProductId" />
+												<button type="submit" class="btn btn-primary btnhover">Add To Cart</button>
+											</form>
+										</td>
+										<td class="product-item-close"><a href="javascript:void(0);" class="ti-close"></a></td>
+									</tr>
+								}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+}

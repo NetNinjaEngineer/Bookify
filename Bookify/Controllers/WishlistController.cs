@@ -22,6 +22,9 @@ public class WishlistController(
 	{
 		var userWishlist = await _wishlistService.GetUserWishlistAsync();
 
-		return View();
+		if (userWishlist.IsSuccess)
+			return View(userWishlist.Value);
+
+		return View("Error");
 	}
 }

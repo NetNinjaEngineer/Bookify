@@ -10,9 +10,8 @@
 </section>
 
 <button class="breadcrumb">
-    <a href="index.html">HOME</a> > CONTACT
+    <a asp-action="Index" asp-controller="Home">HOME</a> > CONTACT
 </button>
-
 
 <!-- Google Map -->
 <section class="map">
@@ -25,7 +24,7 @@
     <div class="contact-info">
         <div class="info-overlay"></div>
         <div class="info-content">
-            <h2>Get In Touch</h2>
+            <h2 style="color: white;">Get In Touch</h2>
             <p>If you are interested in working with us, please get in touch.</p>
             <div class="address">
                 <i class="icon">📍</i>
@@ -33,7 +32,7 @@
                 Egypt, Minoufia, Shebin Elkom, 211 Paris Street
             </div>
             <div class="email">
-                <i class="icon">✉️</i>
+                <i class="icon">✉</i>
                 <strong>Our Email</strong><br>
                 info@gmail.com<br>
                 services@gmail.com
@@ -41,6 +40,7 @@
         </div>
     </div>
     <div class="contact-form">
+        <p class="sub-title-form ">CONTACT US</p>
         <h2>Get In Touch With Us</h2>
         <form action="#">
             <input type="text" placeholder="Full Name" required>

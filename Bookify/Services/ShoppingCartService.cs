@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Bookify.Abstractions;
 using Bookify.Entities;
 using Bookify.Exceptions;
 using Bookify.Models;
@@ -11,128 +12,134 @@ using System.Text.Json;
 namespace Bookify.Services;
 
 public class ShoppingCartService(
-    IConnectionMultiplexer connection,
-    IGenericRepository<Book> bookRepository,
-    IMapper mapper) : IShoppingCartService
+	IConnectionMultiplexer connection,
+	IGenericRepository<Book> bookRepository,
+	IMapper mapper) : IShoppingCartService
 {
-    private readonly IDatabase _database = connection.GetDatabase();
-    private readonly IGenericRepository<Book> _bookRepository = bookRepository;
-    private readonly IMapper _mapper = mapper;
+	private readonly IDatabase _database = connection.GetDatabase();
+	private readonly IGenericRepository<Book> _bookRepository = bookRepository;
+	private readonly IMapper _mapper = mapper;
 
-    public async Task<ShoppingCart?> AddItemToBasketAsync(Guid basketId, string customerEmail, int productId, int quantity)
-    {
-        var customerShoppingCart = await GetBasketAsync(basketId)
-            ?? new ShoppingCart()
-            {
-                BasketId = basketId,
-                CustomerEmail = customerEmail,
-                CreatedAt = DateTimeOffset.UtcNow,
-                UpdatedAt = DateTimeOffset.UtcNow,
-                ShoppingCartItems = []
-            };
+	public async Task<Result<ShoppingCart>> AddItemToBasketAsync(Guid basketId, string customerEmail, int productId, int quantity)
+	{
+		var customerShoppingCart = await GetBasketAsync(basketId)
+			?? new ShoppingCart()
+			{
+				BasketId = basketId,
+				CustomerEmail = customerEmail,
+				CreatedAt = DateTimeOffset.Now,
+				UpdatedAt = DateTimeOffset.Now,
+				ShoppingCartItems = []
+			};
 
-        ArgumentOutOfRangeException.ThrowIfLessThan(quantity, 1);
+		if (quantity < 1)
+			return Result<ShoppingCart>.Fail("Quantity is less than 1.");
 
-        var book = await _bookRepository.GetByIdAsync(productId)
-            ?? throw new ArgumentException("Book not found.");
 
-        if (book.StockQuantity < quantity)
-            throw new InvalidOperationException("Insufficient stock for the book.");
+		var book = await _bookRepository.GetByIdAsync(productId);
 
-        // if item exists in customer basket just increase item quantity
-        var existedItem = customerShoppingCart.ShoppingCartItems.FirstOrDefault(scItem => scItem.ProductId == productId);
+		if (book == null)
+			return Result<ShoppingCart>.Fail("Book is found");
 
-        if (existedItem is not null)
-        {
-            existedItem.Quantity += quantity;
-            return await UpdateBasketAsync(customerShoppingCart);
-        }
 
-        var mappedBook = _mapper.Map<BookForListVM>(book);
+		if (book.StockQuantity < quantity)
+			return Result<ShoppingCart>.Fail("Insufficient stock for the book.");
 
-        var shoppingCartItem = new ShoppingCartItem
-        {
-            Id = Guid.NewGuid(),
-            Name = book.Title,
-            PictureUrl = mappedBook.PictureUrl,
-            Price = mappedBook.Price,
-            ProductId = mappedBook.Id,
-            Quantity = quantity,
-            AddedAt = DateTimeOffset.UtcNow
-        };
+		// if item exists in customer basket just increase item quantity
+		var existedItem = customerShoppingCart.ShoppingCartItems.FirstOrDefault(scItem => scItem.ProductId == productId);
 
-        customerShoppingCart.ShoppingCartItems.Add(shoppingCartItem);
+		if (existedItem is not null)
+		{
+			existedItem.Quantity += quantity;
 
-        return await UpdateBasketAsync(customerShoppingCart);
-    }
+			return Result<ShoppingCart>.Ok(await UpdateBasketAsync(customerShoppingCart));
+		}
 
-    public async Task<bool> DeleteBasketAsync(Guid basketId)
-        => await _database.KeyDeleteAsync(basketId.ToString());
+		var mappedBook = _mapper.Map<BookForListVM>(book);
 
-    public async Task<ShoppingCart?> GetBasketAsync(Guid basketId)
-    {
-        var basket = await _database.StringGetAsync(basketId.ToString());
-        return basket.IsNull ? null : JsonSerializer.Deserialize<ShoppingCart>(basket!);
-    }
+		var shoppingCartItem = new ShoppingCartItem
+		{
+			Id = Guid.NewGuid(),
+			Name = book.Title,
+			PictureUrl = mappedBook.PictureUrl,
+			Price = mappedBook.Price,
+			ProductId = mappedBook.Id,
+			Quantity = quantity,
+			AddedAt = DateTimeOffset.Now
+		};
 
-    public async Task<int> GetItemsCountInBasketAsync(Guid basketId)
-    {
-        var customerBasket = await GetBasketAsync(basketId);
-        if (customerBasket?.ShoppingCartItems?.Count > 0)
-            return customerBasket.ShoppingCartItems.Count;
-        return 0;
-    }
+		customerShoppingCart.ShoppingCartItems.Add(shoppingCartItem);
 
-    public async Task<ShoppingCart?> RemoveItemFromBasketAsync(Guid basketId, Guid itemId)
-    {
-        var customerShoppingCart = await GetBasketAsync(basketId);
+		return Result<ShoppingCart>.Ok(await UpdateBasketAsync(customerShoppingCart));
+	}
 
-        if (customerShoppingCart is null) return null;
+	public async Task<bool> DeleteBasketAsync(Guid basketId)
+		=> await _database.KeyDeleteAsync(basketId.ToString());
 
-        var existedBasketItem = customerShoppingCart.ShoppingCartItems.FirstOrDefault(scItem => scItem.Id == itemId)
-            ?? throw new BasketItemNotFoundException($"Item with id {itemId} not founded !!!");
+	public async Task<ShoppingCart?> GetBasketAsync(Guid basketId)
+	{
+		var basket = await _database.StringGetAsync(basketId.ToString());
+		return basket.IsNull ? null : JsonSerializer.Deserialize<ShoppingCart>(basket!);
+	}
 
-        customerShoppingCart.ShoppingCartItems.Remove(existedBasketItem);
+	public async Task<int> GetItemsCountInBasketAsync(Guid basketId)
+	{
+		var customerBasket = await GetBasketAsync(basketId);
+		if (customerBasket?.ShoppingCartItems?.Count > 0)
+			return customerBasket.ShoppingCartItems.Count;
+		return 0;
+	}
 
-        return await UpdateBasketAsync(customerShoppingCart);
-    }
+	public async Task<ShoppingCart?> RemoveItemFromBasketAsync(Guid basketId, Guid itemId)
+	{
+		var customerShoppingCart = await GetBasketAsync(basketId);
 
-    public async Task<ShoppingCart?> UpdateBasketAsync(ShoppingCart basket)
-    {
-        var jsonShoppingCart = JsonSerializer.Serialize(basket);
+		if (customerShoppingCart is null) return null;
 
-        var createdOrUpdatedShoppingCart = await _database.StringSetAsync(basket.BasketId.ToString(), jsonShoppingCart);
+		var existedBasketItem = customerShoppingCart.ShoppingCartItems.FirstOrDefault(scItem => scItem.Id == itemId)
+			?? throw new BasketItemNotFoundException($"Item with id {itemId} not founded !!!");
 
-        if (!createdOrUpdatedShoppingCart) return null;
+		customerShoppingCart.ShoppingCartItems.Remove(existedBasketItem);
 
-        return await GetBasketAsync(basket.BasketId);
-    }
+		return await UpdateBasketAsync(customerShoppingCart);
+	}
 
-    public async Task<ShoppingCart?> UpdateItemQuantityInBasketAsync(Guid basketId, Guid itemId, int quantity)
-    {
-        var shoppingCart = await GetBasketAsync(basketId);
+	public async Task<ShoppingCart?> UpdateBasketAsync(ShoppingCart basket)
+	{
+		var jsonShoppingCart = JsonSerializer.Serialize(basket);
 
-        if (shoppingCart == null) return null;
+		var createdOrUpdatedShoppingCart = await _database.StringSetAsync(basket.BasketId.ToString(), jsonShoppingCart);
 
-        var existedBasketItem = shoppingCart.ShoppingCartItems.FirstOrDefault(x => x.Id == itemId)
-            ?? throw new BasketItemNotFoundException($"Basket Item with id {itemId} not founded !!!");
+		if (!createdOrUpdatedShoppingCart) return null;
 
-        if (quantity < 1)
-            throw new ArgumentException("Quantity must be at least 1.");
+		return await GetBasketAsync(basket.BasketId);
+	}
 
-        var book = await _bookRepository.GetByIdAsync(existedBasketItem.ProductId)
-            ?? throw new ArgumentException("Book not found.");
+	public async Task<ShoppingCart?> UpdateItemQuantityInBasketAsync(Guid basketId, Guid itemId, int quantity)
+	{
+		var shoppingCart = await GetBasketAsync(basketId);
 
-        if (book.StockQuantity < quantity)
-            throw new InvalidOperationException("Insufficient stock for the book.");
+		if (shoppingCart == null) return null;
 
-        if (existedBasketItem != null)
-        {
-            existedBasketItem.Quantity = quantity;
-            return await UpdateBasketAsync(shoppingCart);
-        }
+		var existedBasketItem = shoppingCart.ShoppingCartItems.FirstOrDefault(x => x.Id == itemId)
+			?? throw new BasketItemNotFoundException($"Basket Item with id {itemId} not founded !!!");
 
-        return await UpdateBasketAsync(shoppingCart);
+		if (quantity < 1)
+			throw new ArgumentException("Quantity must be at least 1.");
 
-    }
+		var book = await _bookRepository.GetByIdAsync(existedBasketItem.ProductId)
+			?? throw new ArgumentException("Book not found.");
+
+		if (book.StockQuantity < quantity)
+			throw new InvalidOperationException("Insufficient stock for the book.");
+
+		if (existedBasketItem != null)
+		{
+			existedBasketItem.Quantity = quantity;
+			return await UpdateBasketAsync(shoppingCart);
+		}
+
+		return await UpdateBasketAsync(shoppingCart);
+
+	}
 }

@@ -26,6 +26,7 @@ public class MappingProfile : Profile
 		CreateMap<WishlistItem, WishlistItemVM>()
 			.ForMember(dest => dest.ProductId, options => options.MapFrom(src => src.BookId))
 			.ForMember(dest => dest.ProductName, options => options.MapFrom(src => src.Book.Title))
+			.ForMember(dest => dest.Price, options => options.MapFrom(src => src.Book.Price))
 			.ForMember(dest => dest.ProductImageUrl, options => options.MapFrom<WishlistItemVMPictureUrlValueResolver>());
 
 		CreateMap<Wishlist, WishlistForListVM>()
