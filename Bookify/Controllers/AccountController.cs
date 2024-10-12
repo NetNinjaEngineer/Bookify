@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using AutoMapper;
 using Bookify.Entities;
 using Bookify.Helpers;
 using Bookify.ViewModels;
@@ -14,140 +15,152 @@ namespace Bookify.Controllers;
 [AllowAnonymous]
 public class AccountController : Controller
 {
-    private readonly UserManager<User> _userManager;
-    private readonly SignInManager<User> _signManager;
-    private readonly IMapper _mapper;
-    private readonly ILogger<AccountController> _logger;
+	private readonly UserManager<User> _userManager;
+	private readonly SignInManager<User> _signManager;
+	private readonly IMapper _mapper;
+	private readonly ILogger<AccountController> _logger;
+	private readonly INotyfService _notyfService;
 
-    public AccountController(
-        UserManager<User>
-        userManager, SignInManager<User> signManager,
-        IMapper mapper, ILogger<AccountController> logger)
-    {
-        _userManager = userManager;
-        _signManager = signManager;
-        _mapper = mapper;
-        _logger = logger;
-    }
+	public AccountController(
+		UserManager<User>
+		userManager, SignInManager<User> signManager,
+		IMapper mapper, ILogger<AccountController> logger, INotyfService notyfService)
+	{
+		_userManager = userManager;
+		_signManager = signManager;
+		_mapper = mapper;
+		_logger = logger;
+		_notyfService = notyfService;
+	}
 
-    public IActionResult Register()
-    {
-        return View();
-    }
+	public IActionResult Register()
+	{
+		return View();
+	}
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> Register(RegisterVM registerModel)
+	{
+		if (!ModelState.IsValid)
+		{
+			_notyfService.Error("Please correct the highlighted errors and try again.");
+			return View(registerModel);
+		}
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Register(RegisterVM registerModel)
-    {
-        if (!ModelState.IsValid)
-            return View(registerModel);
+		var userForRegistration = _mapper.Map<User>(registerModel);
+		string? pictureName = default;
 
-        var userForRegisteration = _mapper.Map<User>(registerModel);
+		if (registerModel.Picture?.Length > 0)
+		{
+			pictureName = Utility.UploadFile(registerModel.Picture, "Images");
+		}
 
-        string? pictureName = default;
+		userForRegistration.Picture = pictureName;
 
-        if (registerModel.Picture?.Length > 0)
-        {
-            pictureName = Utility.UploadFile(registerModel.Picture, "Images");
-        }
+		var registerResult = await _userManager.CreateAsync(userForRegistration, registerModel.Password!);
 
-        userForRegisteration.Picture = pictureName;
+		if (registerResult.Succeeded)
+		{
+			var claims = new List<Claim>
+			{
+				new (ClaimTypes.Email, userForRegistration.Email!),
+				new (ClaimTypes.Name, registerModel.UserName!),
+				new ("FullName", $"{registerModel.FirstName!} {registerModel.LastName!}"),
+			};
 
-        var registerResult = await _userManager.CreateAsync(userForRegisteration, registerModel.Password!);
+			foreach (var claim in claims)
+			{
+				await _userManager.AddClaimAsync(userForRegistration, claim);
+			}
 
-        if (registerResult.Succeeded)
-        {
-            var claims = new List<Claim>
-            {
-                new (ClaimTypes.Email, userForRegisteration.Email!),
-                new (ClaimTypes.Name, registerModel.UserName !),
-                new ("FullName", $"{registerModel.FirstName !} {registerModel.LastName !}"),
-            };
+			_notyfService.Success("Registration successful! You can now log in.");
+			return RedirectToAction("Login");
+		}
 
+		foreach (var error in registerResult.Errors)
+		{
+			ModelState.AddModelError(string.Empty, error.Description);
+		}
 
-            foreach (var claim in claims)
-            {
-                await _userManager.AddClaimAsync(userForRegisteration, claim);
-            }
+		_notyfService.Error("Registration failed. Please check the errors and try again.");
+		return View(registerModel);
+	}
 
-            return RedirectToAction("Login");
-        }
+	public IActionResult Login()
+	{
+		return View();
+	}
 
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> Login(LoginVM loginModel)
+	{
+		if (!ModelState.IsValid)
+		{
+			_notyfService.Error("Please correct the highlighted errors and try again.");
+			return View(loginModel);
+		}
 
-        foreach (var error in registerResult.Errors)
-            ModelState.AddModelError(string.Empty, error.Description);
+		var userForAuthenticate = await _userManager.FindByEmailAsync(loginModel.Email);
 
-        return View(registerModel);
-    }
+		if (userForAuthenticate == null)
+		{
+			_notyfService.Error("Invalid credentials! Please try again.");
+			return View(loginModel);
+		}
 
-    public IActionResult Login()
-    {
-        return View();
-    }
+		var loginResult = await _signManager.PasswordSignInAsync(
+			user: userForAuthenticate,
+			password: loginModel.Password,
+			isPersistent: true,
+			lockoutOnFailure: false);
 
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(LoginVM loginModel)
-    {
-        if (!ModelState.IsValid)
-            return View(loginModel);
+		if (!loginResult.Succeeded)
+		{
+			_notyfService.Error("Login failed! Please check your credentials.");
+			return View(loginModel);
+		}
 
-        var userForAuthenticate = await _userManager.FindByEmailAsync(loginModel.Email);
+		var userClaims = await _userManager.GetClaimsAsync(userForAuthenticate);
 
-        if (userForAuthenticate == null)
-            return NotFound();
+		if (userClaims?.Count > 0)
+		{
+			var claimsIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+			var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
 
-        var loginResult = await _signManager.PasswordSignInAsync(
-            user: userForAuthenticate,
-            password: loginModel.Password,
-            isPersistent: true,
-            lockoutOnFailure: false);
+			await HttpContext.SignInAsync(
+				CookieAuthenticationDefaults.AuthenticationScheme,
+				claimsPrincipal,
+				new AuthenticationProperties
+				{
+					IsPersistent = true,
+					ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30),
+				});
 
-        if (!loginResult.Succeeded)
-            return View(loginModel);
+			_notyfService.Success("Successfully logged in.");
+			return RedirectToAction("Index", "Home");
+		}
 
-        var userClaims = await _userManager.GetClaimsAsync(userForAuthenticate);
+		return View(loginModel);
+	}
 
-        if (userClaims?.Count > 0)
-        {
-            var claimsIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var claimsPrinciple = new ClaimsPrincipal(claimsIdentity);
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> Logout()
+	{
+		await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+		foreach (var cookie in Request.Cookies.Keys)
+		{
+			Response.Cookies.Delete(cookie);
+		}
+		return RedirectToAction("Login");
+	}
 
-            await HttpContext.SignInAsync(
-                CookieAuthenticationDefaults.AuthenticationScheme,
-                claimsPrinciple,
-                new AuthenticationProperties
-                {
-                    IsPersistent = true,
-                    ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(30),
-                });
-
-
-            return RedirectToAction("Index", "Home");
-
-        }
-
-        return View(loginModel);
-
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Logout()
-    {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        foreach (var cookie in Request.Cookies.Keys)
-        {
-            Response.Cookies.Delete(cookie);
-        }
-        return RedirectToAction("Login");
-    }
-
-    [HttpGet]
-    public IActionResult Profile()
-    {
-        return View();
-    }
+	[HttpGet]
+	public IActionResult Profile()
+	{
+		return View();
+	}
 
 
 }

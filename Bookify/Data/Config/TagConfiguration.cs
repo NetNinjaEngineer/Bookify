@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Bookify.Controllers;
+namespace Bookify.Data.Config;
 
 public class TagConfiguration : IEntityTypeConfiguration<Tag>
 {

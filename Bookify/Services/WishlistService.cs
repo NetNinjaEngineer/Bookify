@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Bookify.Abstractions;
-using Bookify.Data;
 using Bookify.Entities;
 using Bookify.Repository.Contracts;
 using Bookify.Services.Contracts;
@@ -12,193 +11,192 @@ namespace Bookify.Services;
 
 public class WishlistService : IWishlistService
 {
-    private readonly IGenericRepository<Wishlist> _wishlistRepository;
-    private readonly IGenericRepository<Book> _bookRepository;
-    private readonly UserManager<User> _userManager;
-    private readonly IGenericRepository<WishlistItem> _wishlistItemsRepository;
-    private readonly IUserService _userService;
-    private readonly IMapper _mapper;
-    private readonly IWishlistRepository _wishlistRepo;
+	private readonly IGenericRepository<Wishlist> _wishlistRepository;
+	private readonly IGenericRepository<Book> _bookRepository;
+	private readonly UserManager<User> _userManager;
+	private readonly IGenericRepository<WishlistItem> _wishlistItemsRepository;
+	private readonly IUserService _userService;
+	private readonly IMapper _mapper;
+	private readonly IWishlistRepository _wishlistRepo;
 
-    public WishlistService(
-        IGenericRepository<Wishlist> wishlistRepository,
-        IGenericRepository<Book> bookRepository,
-        UserManager<User> userManager,
-        IGenericRepository<WishlistItem> wishlistItemsRepository,
-        IUserService userService,
-        IMapper mapper,
-        ApplicationDbContext applicationDbContext,
-        IWishlistRepository wishlistRepo)
-    {
-        _wishlistRepository = wishlistRepository;
-        _bookRepository = bookRepository;
-        _userManager = userManager;
-        _wishlistItemsRepository = wishlistItemsRepository;
-        _userService = userService;
-        _mapper = mapper;
-        _wishlistRepo = wishlistRepo;
-    }
+	public WishlistService(
+		IGenericRepository<Wishlist> wishlistRepository,
+		IGenericRepository<Book> bookRepository,
+		UserManager<User> userManager,
+		IGenericRepository<WishlistItem> wishlistItemsRepository,
+		IUserService userService,
+		IMapper mapper,
+		IWishlistRepository wishlistRepo)
+	{
+		_wishlistRepository = wishlistRepository;
+		_bookRepository = bookRepository;
+		_userManager = userManager;
+		_wishlistItemsRepository = wishlistItemsRepository;
+		_userService = userService;
+		_mapper = mapper;
+		_wishlistRepo = wishlistRepo;
+	}
 
-    public async Task<Result<int>> AddProductToWishlistOrRemoveItAsync(int productId)
-    {
-        var authenticatedUserResult = await CheckIfUserIsAuthenticatedAsync(_userService.UserEmail);
+	public async Task<Result<int>> AddProductToWishlistOrRemoveItAsync(int productId)
+	{
+		var authenticatedUserResult = await CheckIfUserIsAuthenticatedAsync(_userService.UserEmail);
 
-        if (authenticatedUserResult.IsFailure)
-            return Result<int>.Fail(authenticatedUserResult.Error);
+		if (authenticatedUserResult.IsFailure)
+			return Result<int>.Fail(authenticatedUserResult.Error);
 
-        var productExistsResult = await CheckIfProductExistsAsync(productId);
+		var productExistsResult = await CheckIfProductExistsAsync(productId);
 
-        if (productExistsResult.IsFailure)
-            return Result<int>.Fail(productExistsResult.Error);
+		if (productExistsResult.IsFailure)
+			return Result<int>.Fail(productExistsResult.Error);
 
-        var specification = new GetWishlistByUserIdSpecification(authenticatedUserResult.Value.Id);
+		var specification = new GetWishlistByUserIdSpecification(authenticatedUserResult.Value.Id);
 
-        var customerWishlist = await _wishlistRepository.GetEntityBySpecificationAsync(specification);
+		var customerWishlist = await _wishlistRepository.GetEntityBySpecificationAsync(specification);
 
-        // get the wishlist item
-        var existedWishlistItem = await _wishlistItemsRepository.GetEntityBySpecificationAsync(new GetWishlistItemByProductIdSpecification(productId));
+		// get the wishlist item
+		var existedWishlistItem = await _wishlistItemsRepository.GetEntityBySpecificationAsync(new GetWishlistItemByProductIdSpecification(productId));
 
-        if (existedWishlistItem is not null)
-        {
-            // remove from wishList
-            await RemoveProductFromWishlist(productId);
+		if (existedWishlistItem is not null)
+		{
+			// remove from wishList
+			await RemoveProductFromWishlist(productId);
 
-            // get removed id
-            return Result<int>.Ok(existedWishlistItem.BookId);
-        }
+			// get removed id
+			return Result<int>.Ok(existedWishlistItem.BookId);
+		}
 
-        WishlistItem wishlistItem;
+		WishlistItem wishlistItem;
 
-        if (customerWishlist != null)
-        {
-            wishlistItem = AddWishlistItem(productExistsResult.Value, customerWishlist);
+		if (customerWishlist != null)
+		{
+			wishlistItem = AddWishlistItem(productExistsResult.Value, customerWishlist);
 
-            return Result<int>.Ok(wishlistItem.BookId);
-        }
+			return Result<int>.Ok(wishlistItem.BookId);
+		}
 
-        var createdWishlistIdResult = await CreateUserWishlistAsync(_userService.UserEmail);
+		var createdWishlistIdResult = await CreateUserWishlistAsync(_userService.UserEmail);
 
-        if (createdWishlistIdResult.IsSuccess)
-        {
-            // creation success
-            var createdWishlist = await _wishlistRepository.GetByIdAsync(createdWishlistIdResult.Value);
+		if (createdWishlistIdResult.IsSuccess)
+		{
+			// creation success
+			var createdWishlist = await _wishlistRepository.GetByIdAsync(createdWishlistIdResult.Value);
 
-            // check creation if its null
+			// check creation if its null
 
-            if (createdWishlist is null)
-                return Result<int>.Fail("Error while creating wishlist.");
+			if (createdWishlist is null)
+				return Result<int>.Fail("Error while creating wishlist.");
 
-            wishlistItem = AddWishlistItem(productExistsResult.Value, createdWishlist);
+			wishlistItem = AddWishlistItem(productExistsResult.Value, createdWishlist);
 
-            createdWishlist.WishlistItems.Add(wishlistItem);
+			createdWishlist.WishlistItems.Add(wishlistItem);
 
-            await _wishlistRepository.CommitAsync();
+			await _wishlistRepository.CommitAsync();
 
-            return Result<int>.Ok(wishlistItem.BookId);
-        }
+			return Result<int>.Ok(wishlistItem.BookId);
+		}
 
-        return Result<int>.Fail("Error while creating wishlist.");
+		return Result<int>.Fail("Error while creating wishlist.");
 
-    }
+	}
 
-    private WishlistItem AddWishlistItem(Book product, Wishlist customerWishlist)
-    {
-        WishlistItem wishlistItem = new()
-        {
-            DateAdded = DateTimeOffset.Now,
-            WishlistId = customerWishlist.Id,
-            BookId = product.Id,
-        };
+	private WishlistItem AddWishlistItem(Book product, Wishlist customerWishlist)
+	{
+		WishlistItem wishlistItem = new()
+		{
+			DateAdded = DateTimeOffset.Now,
+			WishlistId = customerWishlist.Id,
+			BookId = product.Id,
+		};
 
-        _wishlistItemsRepository.Add(wishlistItem);
-        return wishlistItem;
-    }
+		_wishlistItemsRepository.Add(wishlistItem);
+		return wishlistItem;
+	}
 
-    public async Task<Result<int>> CreateUserWishlistAsync(string customerEmail)
-    {
-        var user = await _userManager.FindByEmailAsync(customerEmail);
-        if (user != null)
-        {
-            var userWishlist = new Wishlist { UserId = user.Id };
-            _wishlistRepository.Add(userWishlist);
-            return Result<int>.Ok(userWishlist.Id);
-        }
+	public async Task<Result<int>> CreateUserWishlistAsync(string customerEmail)
+	{
+		var user = await _userManager.FindByEmailAsync(customerEmail);
+		if (user != null)
+		{
+			var userWishlist = new Wishlist { UserId = user.Id };
+			_wishlistRepository.Add(userWishlist);
+			return Result<int>.Ok(userWishlist.Id);
+		}
 
-        return Result<int>.Fail("User is not founded !!!");
-    }
+		return Result<int>.Fail("User is not founded !!!");
+	}
 
-    public async Task<Result> RemoveProductFromWishlist(int productId)
-    {
-        var wishlistItemToRemove = await _wishlistItemsRepository.GetEntityBySpecificationAsync(
-            new GetWishlistItemByProductIdSpecification(productId));
+	public async Task<Result> RemoveProductFromWishlist(int productId)
+	{
+		var wishlistItemToRemove = await _wishlistItemsRepository.GetEntityBySpecificationAsync(
+			new GetWishlistItemByProductIdSpecification(productId));
 
-        if (wishlistItemToRemove is not null)
-        {
-            _wishlistItemsRepository.Delete(wishlistItemToRemove);
+		if (wishlistItemToRemove is not null)
+		{
+			_wishlistItemsRepository.Delete(wishlistItemToRemove);
 
-            return Result.Ok();
-        }
+			return Result.Ok();
+		}
 
-        return Result.Fail("Wishlist Item is not found.");
-    }
+		return Result.Fail("Wishlist Item is not found.");
+	}
 
-    private async Task<Result<User>> CheckIfUserIsAuthenticatedAsync(string customerEmail)
-    {
-        var customer = await _userManager.FindByEmailAsync(customerEmail);
+	private async Task<Result<User>> CheckIfUserIsAuthenticatedAsync(string customerEmail)
+	{
+		var customer = await _userManager.FindByEmailAsync(customerEmail);
 
-        if (customer is null)
-            return Result<User>.Fail("User is not authenticated.");
+		if (customer is null)
+			return Result<User>.Fail("User is not authenticated.");
 
-        return Result<User>.Ok(customer);
-    }
+		return Result<User>.Ok(customer);
+	}
 
-    private async Task<Result<Book>> CheckIfProductExistsAsync(int productId)
-    {
-        var book = await _bookRepository.GetByIdAsync(productId);
+	private async Task<Result<Book>> CheckIfProductExistsAsync(int productId)
+	{
+		var book = await _bookRepository.GetByIdAsync(productId);
 
-        if (book is null)
-            return Result<Book>.Fail($"Book with id '{productId}' was not found.");
+		if (book is null)
+			return Result<Book>.Fail($"Book with id '{productId}' was not found.");
 
-        return Result<Book>.Ok(book);
-    }
+		return Result<Book>.Ok(book);
+	}
 
-    public async Task<Result<WishlistForListVM>> GetUserWishlistAsync()
-    {
-        // check if user is authenticated 
-        var currentUserResult = await CheckIfUserIsAuthenticatedAsync(_userService.UserEmail);
+	public async Task<Result<WishlistForListVM>> GetUserWishlistAsync()
+	{
+		// check if user is authenticated 
+		var currentUserResult = await CheckIfUserIsAuthenticatedAsync(_userService.UserEmail);
 
-        if (currentUserResult.IsFailure)
-            return Result<WishlistForListVM>.Fail(currentUserResult.Error);
+		if (currentUserResult.IsFailure)
+			return Result<WishlistForListVM>.Fail(currentUserResult.Error);
 
-        // get userWishlist
-        var userWishlist = await _wishlistRepo.GetUserWishlistAsync(currentUserResult.Value.Id);
+		// get userWishlist
+		var userWishlist = await _wishlistRepo.GetUserWishlistAsync(currentUserResult.Value.Id);
 
-        if (userWishlist is null)
-            return Result<WishlistForListVM>.Fail("Wishlist is not found.");
+		if (userWishlist is null)
+			return Result<WishlistForListVM>.Fail("Wishlist is not found.");
 
-        var mappedUserWishlist = _mapper.Map<WishlistForListVM>(userWishlist);
+		var mappedUserWishlist = _mapper.Map<WishlistForListVM>(userWishlist);
 
-        return Result<WishlistForListVM>.Ok(mappedUserWishlist);
+		return Result<WishlistForListVM>.Ok(mappedUserWishlist);
 
-    }
+	}
 
-    public async Task<Result<int>> GetUserWishlistItemsCountAsync()
-    {
-        if (string.IsNullOrEmpty(_userService.UserEmail))
-            return Result<int>.Fail("User email is not exists (Not Authenticated)");
+	public async Task<Result<int>> GetUserWishlistItemsCountAsync()
+	{
+		if (string.IsNullOrEmpty(_userService.UserEmail))
+			return Result<int>.Fail("User email is not exists (Not Authenticated)");
 
-        var authenticatedResult = await CheckIfUserIsAuthenticatedAsync(_userService.UserEmail);
+		var authenticatedResult = await CheckIfUserIsAuthenticatedAsync(_userService.UserEmail);
 
-        if (authenticatedResult.IsFailure)
-            return Result<int>.Fail(authenticatedResult.Error);
+		if (authenticatedResult.IsFailure)
+			return Result<int>.Fail(authenticatedResult.Error);
 
-        // get userWishlist
-        var userWishlist = await _wishlistRepo.GetUserWishlistAsync(authenticatedResult.Value.Id);
+		// get userWishlist
+		var userWishlist = await _wishlistRepo.GetUserWishlistAsync(authenticatedResult.Value.Id);
 
-        if (userWishlist is not null)
-            return Result<int>.Ok(userWishlist.WishlistItems.Count);
+		if (userWishlist is not null)
+			return Result<int>.Ok(userWishlist.WishlistItems.Count);
 
-        return Result<int>.Fail("Current User Not Have Wishlist Yet.");
+		return Result<int>.Fail("Current User Not Have Wishlist Yet.");
 
-    }
+	}
 }

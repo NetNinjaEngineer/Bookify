@@ -51,6 +51,8 @@ public class BookConfiguration : IEntityTypeConfiguration<Book>
 			.OnDelete(DeleteBehavior.SetNull)
 			.IsRequired(false);
 
+		builder.HasQueryFilter(x => x.StockQuantity > 0);
+
 		builder.ToTable("Books");
 	}
 }

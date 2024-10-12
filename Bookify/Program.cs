@@ -1,3 +1,4 @@
+using AspNetCoreHero.ToastNotification;
 using Bookify.Data;
 using Bookify.Entities;
 using Bookify.Helpers;
@@ -68,6 +69,13 @@ var stripeKeys = new StripeKeys();
 builder.Configuration.Bind(nameof(StripeKeys), stripeKeys);
 
 StripeConfiguration.ApiKey = stripeKeys.SecretKey;
+
+builder.Services.AddNotyf(config =>
+{
+	config.DurationInSeconds = 5;
+	config.IsDismissable = true;
+	config.Position = NotyfPosition.TopRight;
+});
 
 var app = builder.Build();
 
