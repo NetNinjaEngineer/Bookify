@@ -21,7 +21,8 @@ public class MappingProfile : Profile
 		CreateMap<RegisterVM, User>();
 
 		CreateMap<User, UserProfileVM>()
-			.ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<AppUserPictureUrlValueResolver>());
+			.ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<AppUserPictureUrlValueResolver>())
+			.ReverseMap();
 
 		CreateMap<WishlistItem, WishlistItemVM>()
 			.ForMember(dest => dest.ProductId, options => options.MapFrom(src => src.BookId))

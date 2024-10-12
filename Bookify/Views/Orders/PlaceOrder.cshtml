@@ -1,74 +1,202 @@
 ﻿@model CreateOrderRequestVM
+@inject IConfiguration configuration
+@inject IHttpContextAccessor contextAccessor
 
 @{
-    ViewData["Title"] = "Shipping Address Form";
-    var shoppingCartId = ViewBag.ShoppingCartId;
-    var deliveryMethods = ViewBag.DeliveryMethods;
+	ViewData["Title"] = "Shipping Address Form";
+	var shoppingCartId = ViewBag.ShoppingCartId;
+	var deliveryMethods = ViewBag.DeliveryMethods;
+	var shoppingCart = (ShoppingCart)ViewBag.ShoppingCart;
+
+	string? baseUrl = string.Empty;
+
+	if (contextAccessor.HttpContext!.Request.IsHttps)
+		baseUrl = configuration["BaseUrl"];
+	else
+		baseUrl = configuration["FullbackUrl"];
+
+	var shoppingCartItemTotal = shoppingCart.ShoppingCartItems.Sum(x => x.Quantity * x.Price);
+
 }
 
-<h2>Shipping Address</h2>
+<!-- inner page banner -->
+<div class="dz-bnr-inr overlay-secondary-dark dz-bnr-inr-sm" style="background-image:url(images/background/bg3.jpg);">
+	<div class="container">
+		<div class="dz-bnr-inr-entry">
+			<h1>PlaceOrder</h1>
+			<nav aria-label="breadcrumb" class="breadcrumb-row">
+				<ul class="breadcrumb">
+					<li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home"> Home</a></li>
+					<li class="breadcrumb-item">Place Order</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</div>
+<!-- inner page banner End-->
+<!-- contact area -->
+<section class="content-inner-1">
+	<!-- Product -->
+	<div class="container">
+		<form class="shop-form" asp-action="PlaceOrder" method="post">
+			<div class="row">
+				<div class="col-12 ">
+					<div class="widget">
+						<h4 class="widget-title">Billing & Shipping Address</h4>
+						<div class="form-group">
+							<label class="control-label" for="deliveryMethod">Shipping Type</label>
+							<select class="form-control" id="deliveryMethod" asp-items="@deliveryMethods" asp-for="@Model.DeliveryMethodId">
+								<option value="@null">------ select shipping type ------</option>
+							</select>
+						</div>
+						<div class="row">
+							<div class="form-group col-md-6">
+								<label asp-for="@Model.ShippingAddress.FirstName" class="control-label"></label>
+								<input asp-for="@Model.ShippingAddress.FirstName" class="form-control" />
+								<span asp-validation-for="@Model.ShippingAddress.FirstName" class="text-danger"></span>
+							</div>
+							<div class="form-group col-md-6">
+								<label asp-for="@Model.ShippingAddress.LastName" class="control-label"></label>
+								<input asp-for="@Model.ShippingAddress.LastName" class="form-control" />
+								<span asp-validation-for="@Model.ShippingAddress.LastName" class="text-danger"></span>
+							</div>
+						</div>
+						<div class="form-group">
+							<label asp-for="@Model.ShippingAddress.ShippingAddressLine1" class="control-label"></label>
+							<input asp-for="@Model.ShippingAddress.ShippingAddressLine1" class="form-control" />
+							<span asp-validation-for="@Model.ShippingAddress.ShippingAddressLine1" class="text-danger"></span>
+						</div>
 
-<form asp-action="PlaceOrder" method="post">
-    <input type="hidden" name="ShoppingCartId" value="@shoppingCartId" />
+						<div class="form-group">
+							<label asp-for="@Model.ShippingAddress.ShippingAddressLine2" class="control-label"></label>
+							<input asp-for="@Model.ShippingAddress.ShippingAddressLine2" class="form-control" />
+							<span asp-validation-for="@Model.ShippingAddress.ShippingAddressLine2" class="text-danger"></span>
+						</div>
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="Address">
+						</div>
+						<div class="row">
+							<div class="form-group">
+								<label asp-for="@Model.ShippingAddress.ShippingCity" class="control-label"></label>
+								<input asp-for="@Model.ShippingAddress.ShippingCity" class="form-control" />
+								<span asp-validation-for="@Model.ShippingAddress.ShippingCity" class="text-danger"></span>
+							</div>
 
-    <div class="form-group">
-        <label asp-for="@Model.ShippingAddress.FirstName" class="control-label"></label>
-        <input asp-for="@Model.ShippingAddress.FirstName" class="form-control" />
-        <span asp-validation-for="@Model.ShippingAddress.FirstName" class="text-danger"></span>
-    </div>
+							<div class="form-group">
+								<label asp-for="@Model.ShippingAddress.ShippingState" class="control-label"></label>
+								<input asp-for="@Model.ShippingAddress.ShippingState" class="form-control" />
+								<span asp-validation-for="@Model.ShippingAddress.ShippingState" class="text-danger"></span>
+							</div>
+						</div>
+						<div class="row">
+							<div class="form-group">
+								<label asp-for="@Model.ShippingAddress.ShippingPostalCode" class="control-label"></label>
+								<input asp-for="@Model.ShippingAddress.ShippingPostalCode" class="form-control" />
+								<span asp-validation-for="@Model.ShippingAddress.ShippingPostalCode" class="text-danger"></span>
+							</div>
 
-    <div class="form-group">
-        <label asp-for="@Model.ShippingAddress.LastName" class="control-label"></label>
-        <input asp-for="@Model.ShippingAddress.LastName" class="form-control" />
-        <span asp-validation-for="@Model.ShippingAddress.LastName" class="text-danger"></span>
-    </div>
+							<div class="form-group">
+								<label asp-for="@Model.ShippingAddress.ShippingCountry" class="control-label"></label>
+								<input asp-for="@Model.ShippingAddress.ShippingCountry" class="form-control" />
+								<span asp-validation-for="@Model.ShippingAddress.ShippingCountry" class="text-danger"></span>
+							</div>
+						</div>
+						<button class="btn btn-primary btnhover mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#create-an-account">Proceed Order <i class="fa fa-arrow-circle-o-down"></i></button>
+					</div>
+				</div>
 
-    <div class="form-group">
-        <label asp-for="@Model.ShippingAddress.ShippingAddressLine1" class="control-label"></label>
-        <input asp-for="@Model.ShippingAddress.ShippingAddressLine1" class="form-control" />
-        <span asp-validation-for="@Model.ShippingAddress.ShippingAddressLine1" class="text-danger"></span>
-    </div>
+			</div>
+		</form>
 
-    <div class="form-group">
-        <label asp-for="@Model.ShippingAddress.ShippingAddressLine2" class="control-label"></label>
-        <input asp-for="@Model.ShippingAddress.ShippingAddressLine2" class="form-control" />
-        <span asp-validation-for="@Model.ShippingAddress.ShippingAddressLine2" class="text-danger"></span>
-    </div>
+		<div class="dz-divider bg-gray-dark text-gray-dark icon-center  my-5"><i class="fa fa-circle bg-white text-gray-dark"></i></div>
+		<div class="row">
+			<div class="col-lg-6">
+				<div class="widget">
+					<h4 class="widget-title">Your Order</h4>
+					<table class="table-bordered check-tbl">
+						<thead class="text-center">
+							<tr>
+								<th>IMAGE</th>
+								<th>PRODUCT NAME</th>
+								<th>TOTAL</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var item in shoppingCart.ShoppingCartItems)
+							{
+								<tr>
+									<td class="product-item-img"><img src="@item.PictureUrl" alt="@item.Name"></td>
+									<td class="product-item-name">@item.Name</td>
+									<td class="product-price">@((item.Price * item.Quantity).ToString("C"))</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="col-lg-6">
+				<form class="shop-form widget">
+					<h4 class="widget-title">Order Total</h4>
+					<table class="table-bordered check-tbl mb-4">
+						<tbody>
+							<tr>
+								<td>Order Subtotal</td>
+								<td class="product-price">@shoppingCart.ShoppingCartItems.Sum(x => x.Quantity * x.Price).ToString("C")</td>
+							</tr>
+							<tr>
+								<td>Shipping</td>
+								<td class="shipping-type">Free Shipping</td>
+							</tr>
+							<tr>
+								<td>Total</td>
+								<td class="product-price-total">$00.00</td>
+							</tr>
+						</tbody>
+					</table>
 
-    <div class="form-group">
-        <label asp-for="@Model.ShippingAddress.ShippingCity" class="control-label"></label>
-        <input asp-for="@Model.ShippingAddress.ShippingCity" class="form-control" />
-        <span asp-validation-for="@Model.ShippingAddress.ShippingCity" class="text-danger"></span>
-    </div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- Product END -->
+</section>
+<!-- contact area End-->
 
-    <div class="form-group">
-        <label asp-for="@Model.ShippingAddress.ShippingState" class="control-label"></label>
-        <input asp-for="@Model.ShippingAddress.ShippingState" class="form-control" />
-        <span asp-validation-for="@Model.ShippingAddress.ShippingState" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="@Model.ShippingAddress.ShippingPostalCode" class="control-label"></label>
-        <input asp-for="@Model.ShippingAddress.ShippingPostalCode" class="form-control" />
-        <span asp-validation-for="@Model.ShippingAddress.ShippingPostalCode" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label asp-for="@Model.ShippingAddress.ShippingCountry" class="control-label"></label>
-        <input asp-for="@Model.ShippingAddress.ShippingCountry" class="form-control" />
-        <span asp-validation-for="@Model.ShippingAddress.ShippingCountry" class="text-danger"></span>
-    </div>
-
-    <div class="form-group">
-        <label class="control-label" for="deliveryMethod">Delivery Method</label>
-        <select class="form-control" id="deliveryMethod" asp-items="@deliveryMethods" asp-for="@Model.DeliveryMethodId">
-            <option value="@null">------ select delivery method ------</option>
-        </select>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Place Order</button>
-</form>
 
 @section Scripts {
+
+	<script>
+
+		document.getElementById('deliveryMethod').addEventListener('change', (e) => {
+			var shippingTypeId = e.target.value;
+
+			fetch(`@baseUrl/api/ShippingTypes/${shippingTypeId}`, {
+				method: 'GET',
+				headers: {
+					'Accept': 'application/json'
+				}
+			})
+				.then(responseData => {
+					if (responseData.ok) {
+						return responseData.json()
+					}
+				})
+				.then(jsonData => {
+					let shippingType = document.querySelector('.shipping-type');
+					shippingType.innerHTML = '';
+					shippingType.innerHTML = jsonData.title
+
+					let productPrice = document.querySelector('.product-price-total');
+					productPrice.innerHTML = '';
+
+					productPrice.innerHTML = `${jsonData.cost + shoppingCartItemTotal}`;
+
+				})
+		});
+
+
+
+	</script>
+
     <partial name="_ValidationScriptsPartial" />
 }

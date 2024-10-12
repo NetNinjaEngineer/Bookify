@@ -13,13 +13,16 @@ public class OrdersController : Controller
 {
 	private readonly IOrderService _orderService;
 	private readonly IGenericRepository<DeliveryMethod> _deliveryMethodRepository;
+	private readonly IShoppingCartService _shoppingCartService;
 
 	public OrdersController(
 		IOrderService orderService,
-		IGenericRepository<DeliveryMethod> deliveryMethodRepository)
+		IGenericRepository<DeliveryMethod> deliveryMethodRepository,
+		IShoppingCartService shoppingCartService)
 	{
 		_orderService = orderService;
 		_deliveryMethodRepository = deliveryMethodRepository;
+		_shoppingCartService = shoppingCartService;
 	}
 
 	public IActionResult GetAllUserOrders()
@@ -42,6 +45,10 @@ public class OrdersController : Controller
 			dataValueField: "Id",
 			dataTextField: "Title"
 		);
+
+		var shoppingCart = (await _shoppingCartService.GetBasketAsync(shoppingCartId)).Value;
+
+		ViewBag.ShoppingCart = shoppingCart;
 
 		ViewBag.DeliveryMethods = deliveryMethods;
 

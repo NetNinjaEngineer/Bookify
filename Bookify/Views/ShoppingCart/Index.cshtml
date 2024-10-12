@@ -1,184 +1,120 @@
-﻿ @model ShoppingCart
+﻿@model ShoppingCart
 
- @{
-     ViewData["Title"] = "Your Basket";
- }
+@{
+    ViewData["Title"] = "Your Basket";
+}
 
 <!-- inner page banner -->
 <div class="dz-bnr-inr overlay-secondary-dark dz-bnr-inr-sm" style="background-image:url(images/background/bg3.jpg);">
-	<div class="container">
-		<div class="dz-bnr-inr-entry">
-			<h1>Cart</h1>
-			<nav aria-label="breadcrumb" class="breadcrumb-row">
-				<ul class="breadcrumb">
-					<li class="breadcrumb-item"><a href="index.html"> Home</a></li>
-					<li class="breadcrumb-item">Cart</li>
-				</ul>
-			</nav>
-		</div>
-	</div>
+    <div class="container">
+        <div class="dz-bnr-inr-entry">
+            <h1>Cart</h1>
+            <nav aria-label="breadcrumb" class="breadcrumb-row">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-action="Index" asp-controller="Home"> Home</a></li>
+                    <li class="breadcrumb-item">Cart</li>
+                </ul>
+            </nav>
+        </div>
+    </div>
 </div>
 <!-- inner page banner End-->
 <!-- contact area -->
 <section class="content-inner shop-account">
-	<!-- Product -->
-	<div class="container">
-		<div class="row mb-5">
-			<div class="col-lg-12">
-				<div class="table-responsive">
-					<table class="table check-tbl">
-						<thead>
-							<tr>
-								<th>Product</th>
-								<th>Product name</th>
-								<th>Unit Price</th>
-								<th>Quantity</th>
-								<th>Total</th>
-								<th class="text-end">Close</th>
-							</tr>
-						</thead>
-						<tbody>
-						
+    <!-- Product -->
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-lg-12">
+                <div class="table-responsive">
+                    <table class="table check-tbl">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Product name</th>
+                                <th>Unit Price</th>
+                                <th>Quantity</th>
+                                <th>Total</th>
+                                <th class="text-end">Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             @foreach (var shopCartItem in Model.ShoppingCartItems)
                             {
                                 <tr>
-                                    <td class="product-item-img"><img src="@shopCartItem.ProductId" alt=""></td>
+                                    <td class="product-item-img">
+                                        <img src="@shopCartItem.PictureUrl" alt="@shopCartItem.Name">
+                                    </td>
                                     <td class="product-item-name">@shopCartItem.Name</td>
                                     <td class="product-item-price">@shopCartItem.Price.ToString("C")</td>
-                                    <td class="product-item-quantity">
-                                        <div class="quantity btn-quantity style-1 me-3">
-                                            <input id="demo_vertical2" type="text" value="1" name="demo_vertical2" />
-                                        </div>
+                                    <td>
+                                        <form asp-action="UpdateQuantity" asp-controller="ShoppingCart" method="post">
+                                            <input type="hidden" name="itemId" value="@shopCartItem.Id" />
+                                            <div class="quantity btn-quantity d-flex align-items-center me-3">
+                                                <button type="button" class="btn btn-outline-secondary decrement">-</button>
+                                                <input type="text" name="Quantity" class="form-control text-center mx-2 product-item-quantity w-25" value="@shopCartItem.Quantity" readonly />
+                                                <button type="button" class="btn btn-outline-secondary increment">+</button>
+                                                <button type="submit" class="btn btn-primary">Update</button>
+                                            </div>
+                                        </form>
                                     </td>
-                                    <td class="product-item-totle">@(shopCartItem.Price * shopCartItem.Quantity)</td>
-                                    <td class="product-item-close"><a href="javascript:void(0);" class="ti-close"></a></td>
+                                    <td class="product-item-total">@((shopCartItem.Price * shopCartItem.Quantity).ToString("C"))</td>
+                                    <td class="product-item-close">
+                                        <form asp-action="RemoveItem" asp-controller="ShoppingCart" method="post">
+                                            <input type="hidden" name="itemId" value="@shopCartItem.Id" />
+                                            <button type="submit" class="btn btn-danger">Remove</button>
+                                        </form>
+                                    </td>
                                 </tr>
                             }
-	
-						</tbody>
-					</table>
-				</div>
-			</div>
-
-		</div>
-		<div class="row">
-			<div class="col-lg-6">
-				<div class="widget">
-					<h4 class="widget-title">Cart Subtotal</h4>
-					<table class="table-bordered check-tbl m-b25">
-						<tbody>
-							<tr>
-								<td>Order Subtotal</td>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="widget">
+                    <h4 class="widget-title">Cart Subtotal</h4>
+                    <table class="table-bordered check-tbl m-b25">
+                        <tbody>
+                            <tr>
+                                <td>Order Subtotal</td>
                                 <td>@Model.ShoppingCartItems.Sum(item => item.Price * item.Quantity).ToString("C")</td>
-							</tr>
-							<tr>
-								<td>Total</td>
+                            </tr>
+                            <tr>
+                                <td>Total</td>
                                 <td>@Model.ShoppingCartItems.Sum(item => item.Price * item.Quantity).ToString("C")</td>
-							</tr>
-						</tbody>
-					</table>
-					<div class="form-group m-b25">
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="form-group m-b25">
                         <a class="btn btn-primary btnhover" type="button" asp-action="PlaceOrder" asp-controller="Orders" asp-route-shoppingCartId="@Model.BasketId">Proceed to Checkout</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-	<!-- Product END -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Product END -->
 </section>
 <!-- contact area End-->
+@section Scripts {
+    <script>
+        document.querySelectorAll('.increment').forEach(button => {
+            button.addEventListener('click', function () {
+                let quantityInput = this.closest('form').querySelector('.product-item-quantity');
+                let currentValue = parseInt(quantityInput.value);
+                quantityInput.value = currentValue + 1;
+            });
+        });
 
-
-
-@* <div class="container mt-4">
-     <h2 class="mb-4">Shopping Cart</h2>
-
-     @if (Model.ShoppingCartItems.Count == 0)
-     {
-         <div class="alert alert-warning" role="alert">
-             Your basket is currently empty. <a href="/Books" class="alert-link">Continue Shopping</a>.
-         </div>
-     }
-     else
-     {
-         <div class="row">
-             <div class="col-md-8">
-                 <table class="table table-hover">
-                     <thead>
-                         <tr>
-                             <th scope="col">Item</th>
-                             <th scope="col">Price</th>
-                             <th scope="col">Quantity</th>
-                             <th scope="col">Total</th>
-                             <th scope="col"></th>
-                         </tr>
-                     </thead>
-                     <tbody>
-                         @foreach (var item in Model.ShoppingCartItems)
-                         {
-                             <tr>
-                                 <td class="align-middle">
-                                     <div class="d-flex align-items-center">
-                                         <img src="@item.PictureUrl" alt="@item.Name" class="img-fluid" style="width: 100px; height: auto;" />
-                                         <div class="ml-3">
-                                             <h5>@item.Name</h5>
-                                         </div>
-                                     </div>
-                                 </td>
-                                 <td class="align-middle">@item.Price.ToString("C")</td>
-                                 <td class="align-middle">
-                                     <form asp-action="UpdateQuantity" method="post" class="d-inline-flex">
-                                         <input type="hidden" name="itemId" value="@item.Id" />
-                                         <input type="number" name="quantity" value="@item.Quantity" min="1" class="form-control" style="width: 60px;" />
-                                         <button type="submit" class="btn btn-sm btn-outline-primary ml-2">Update</button>
-                                     </form>
-                                 </td>
-                                 <td class="align-middle">@((item.Price * item.Quantity).ToString("C"))</td>
-                                 <td class="align-middle">
-                                     <form asp-action="RemoveItem" method="post">
-                                         <input type="hidden" name="itemId" value="@item.Id" />
-                                         <button type="submit" class="btn btn-sm btn-danger">Remove</button>
-                                     </form>
-                                 </td>
-                             </tr>
-                         }
-                     </tbody>
-                 </table>
-             </div>
-
-             <!-- Summary -->
-             <div class="col-md-4">
-                 <div class="card">
-                     <div class="card-body">
-                         <h5 class="card-title">Order Summary</h5>
-                         <hr />
-                         <p class="d-flex justify-content-between">
-                             <span>Subtotal:</span>
-                             <strong>
-                                 @Model.ShoppingCartItems.Sum(item => item.Price * item.Quantity).ToString("C")
-                             </strong>
-                         </p>
-                         <p class="d-flex justify-content-between">
-                             <span>Shipping:</span>
-                             <strong>Free</strong>
-                         </p>
-                         <hr />
-                         <p class="d-flex justify-content-between">
-                             <span>Total:</span>
-                             <strong>
-                                @Model.ShoppingCartItems.Sum(item => item.Price * item.Quantity).ToString("C")
-                             </strong>
-                         </p>
-
-                        <a asp-action="PlaceOrder" asp-controller="Orders" asp-route-shoppingCartId="@Model.BasketId" class="btn btn-success btn-block mt-3">Place Order</a>
-
-                         <form asp-action="ClearBasket" method="post" class="mt-2">
-                             <input type="hidden" name="basketId" value="@Model.BasketId" />
-                             <button type="submit" class="btn btn-outline-danger btn-block">Clear Basket</button>
-                         </form>
-                     </div>
-                 </div>
-             </div>
-         </div>
-     }
- </div> *@
+        document.querySelectorAll('.decrement').forEach(button => {
+            button.addEventListener('click', function () {
+                let quantityInput = this.closest('form').querySelector('.product-item-quantity');
+                let currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+            });
+        });
+    </script>
+}

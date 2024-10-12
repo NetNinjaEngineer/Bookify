@@ -2,6 +2,7 @@
 using AutoMapper;
 using Bookify.Entities;
 using Bookify.Helpers;
+using Bookify.Services.Contracts;
 using Bookify.ViewModels;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -20,17 +21,19 @@ public class AccountController : Controller
 	private readonly IMapper _mapper;
 	private readonly ILogger<AccountController> _logger;
 	private readonly INotyfService _notyfService;
+	private readonly IUserService _userService;
 
 	public AccountController(
 		UserManager<User>
 		userManager, SignInManager<User> signManager,
-		IMapper mapper, ILogger<AccountController> logger, INotyfService notyfService)
+		IMapper mapper, ILogger<AccountController> logger, INotyfService notyfService, IUserService userService)
 	{
 		_userManager = userManager;
 		_signManager = signManager;
 		_mapper = mapper;
 		_logger = logger;
 		_notyfService = notyfService;
+		_userService = userService;
 	}
 
 	public IActionResult Register()
@@ -157,10 +160,50 @@ public class AccountController : Controller
 	}
 
 	[HttpGet]
-	public IActionResult Profile()
+	[Authorize]
+	public async Task<IActionResult> Profile()
 	{
-		return View();
+		var loggedInUser = await _userManager.FindByEmailAsync(_userService.UserEmail);
+		var mappedUserProfile = _mapper.Map<UserProfileVM>(loggedInUser);
+		return View(mappedUserProfile);
 	}
 
 
+	[Authorize]
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> SaveSettings(UserProfileVM userProfileVM)
+	{
+		if (!ModelState.IsValid)
+		{
+			return View(ModelState);
+		}
+
+		var currentUser = await _userManager.FindByEmailAsync(_userService.UserEmail);
+
+		_mapper.Map(userProfileVM, currentUser);
+
+		if (userProfileVM.ProfilePicture != null && userProfileVM.ProfilePicture.Length > 0)
+		{
+			Utility.DeleteFile(currentUser!.Picture!, "Images");
+			currentUser.Picture = Utility.UploadFile(userProfileVM.ProfilePicture, "Images");
+		}
+
+		var updateResult = await _userManager.UpdateAsync(currentUser!);
+
+		if (updateResult.Succeeded)
+		{
+			_notyfService.Success("Successfully updated.");
+			return RedirectToAction(nameof(Profile));
+		}
+
+		foreach (var error in updateResult.Errors)
+		{
+			ModelState.AddModelError(string.Empty, error.Description);
+		}
+
+		_notyfService.Error("Please correct the highlighted errors and try again.");
+
+		return View(userProfileVM);
+	}
 }

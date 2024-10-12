@@ -7,4 +7,6 @@ public class UserProfileVM
 	public string Email { get; set; } = string.Empty;
 	public string UserName { get; set; } = string.Empty;
 	public string PictureUrl { get; set; } = string.Empty;
+	public IFormFile? ProfilePicture { get; set; }
+	public string Fullname => $"{FirstName} {LastName}";
 }

@@ -41,10 +41,8 @@ namespace Bookify.Services
 			if (book.StockQuantity < quantity)
 				return Result<ShoppingCart>.Fail("Insufficient stock for the book.");
 
-			var customerShoppingCartResult = await GetBasketAsync(basketId);
-			ShoppingCart? customerShoppingCart = null;
-			if (customerShoppingCartResult.Value == null)
-				customerShoppingCart = new ShoppingCart
+			var customerShoppingCart = (await GetBasketAsync(basketId)).Value
+				?? new ShoppingCart
 				{
 					BasketId = basketId,
 					CustomerEmail = customerEmail,
