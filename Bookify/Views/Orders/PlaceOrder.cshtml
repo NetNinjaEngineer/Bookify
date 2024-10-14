@@ -43,6 +43,7 @@
 				<div class="col-12 ">
 					<div class="widget">
 						<h4 class="widget-title">Billing & Shipping Address</h4>
+						<input type="hidden" name="ShoppingCartId" value="@shoppingCartId" />
 						<div class="form-group">
 							<label class="control-label" for="deliveryMethod">Shipping Type</label>
 							<select class="form-control" id="deliveryMethod" asp-items="@deliveryMethods" asp-for="@Model.DeliveryMethodId">
@@ -72,9 +73,6 @@
 							<input asp-for="@Model.ShippingAddress.ShippingAddressLine2" class="form-control" />
 							<span asp-validation-for="@Model.ShippingAddress.ShippingAddressLine2" class="text-danger"></span>
 						</div>
-						<div class="form-group">
-							<input type="text" class="form-control" placeholder="Address">
-						</div>
 						<div class="row">
 							<div class="form-group">
 								<label asp-for="@Model.ShippingAddress.ShippingCity" class="control-label"></label>
@@ -101,7 +99,7 @@
 								<span asp-validation-for="@Model.ShippingAddress.ShippingCountry" class="text-danger"></span>
 							</div>
 						</div>
-						<button class="btn btn-primary btnhover mb-3" type="button" data-bs-toggle="collapse" data-bs-target="#create-an-account">Proceed Order <i class="fa fa-arrow-circle-o-down"></i></button>
+						<button class="btn btn-primary btnhover mb-3" type="submit" data-bs-toggle="collapse" data-bs-target="#create-an-account">Proceed Order <i class="fa fa-arrow-circle-o-down"></i></button>
 					</div>
 				</div>
 

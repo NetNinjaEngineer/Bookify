@@ -17,6 +17,9 @@ public static class SpecificationQueryEvaluator
 		if (specification.Criteria is not null)
 			inputQuery = inputQuery.Where(specification.Criteria);
 
+		if (specification.IsPagingEnabled)
+			inputQuery = inputQuery.Skip((specification.Skip - 1) * specification.Take).Take(specification.Take);
+
 		return inputQuery;
 
 	}

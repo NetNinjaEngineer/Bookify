@@ -9,4 +9,10 @@ public interface IBaseSpecification<TEntity> where TEntity : BaseEntity
 
 	public Expression<Func<TEntity, bool>> Criteria { get; set; }
 
+	public bool IsPagingEnabled { get; set; }
+
+	public int Skip { get; set; }
+
+	public int Take { get; set; }
+
 }

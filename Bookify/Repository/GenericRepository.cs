@@ -24,6 +24,9 @@ public class GenericRepository<TEntity>
 
 	public async Task CommitAsync() => await context.SaveChangesAsync();
 
+	public async Task<int> CountWithSpecificationAsync(IBaseSpecification<TEntity> specification)
+		=> await SpecificationQueryEvaluator.BuildQuery(context.Set<TEntity>(), specification).CountAsync();
+
 	public void Delete(TEntity entity)
 	{
 		context.Remove(entity);

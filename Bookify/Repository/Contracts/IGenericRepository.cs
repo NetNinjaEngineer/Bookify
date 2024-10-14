@@ -22,4 +22,7 @@ public interface IGenericRepository<TEntity> where TEntity : BaseEntity
 	Task CommitAsync();
 
 	Task<TEntity?> ExistsAsync(int id);
+
+	Task<int> CountWithSpecificationAsync(IBaseSpecification<TEntity> specification);
+
 }

@@ -1,4 +1,6 @@
-﻿namespace Bookify.ViewModels;
+﻿using Bookify.Entities;
+
+namespace Bookify.ViewModels;
 
 public class BookForListVM
 {
@@ -7,6 +9,20 @@ public class BookForListVM
     public string? Description { get; set; }
     public string? PictureUrl { get; set; }
     public decimal Price { get; set; }
-    public string Genre { get; set; }
-    public string Author { get; set; }
+    public string Genre { get; set; } = string.Empty;
+    public string Author { get; set; } = string.Empty;
+    public string Publisher { get; set; } = string.Empty;
+    public string ISBN { get; set; } = string.Empty;
+
+    public EditionLanguage EditionLanguage { get; set; }
+
+    public string BookFormat { get; set; } = string.Empty;
+
+    public int Pages { get; set; }
+
+    public int Lessons { get; set; }
+
+    public DateTimeOffset DatePublished { get; set; }
+
+    public ICollection<TagVM> Tags { get; set; } = [];
 }

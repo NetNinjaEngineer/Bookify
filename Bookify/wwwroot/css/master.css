@@ -21088,7 +21088,7 @@ pre {
     @media only screen and (max-width: 575px) {
       .dz-shop-card.style-1 {
         padding: 22px; } }
-  .dz-shop-card.style-2 {
+.dz-shop-card.style-2 {
     display: flex;
     border: 1px solid #F0F0F0;
     background-color: #ffffff;
@@ -21097,7 +21097,8 @@ pre {
     border-radius: 6px;
     -webkit-transition: all 0.8s;
     -ms-transition: all 0.8s;
-    transition: all 0.8s; }
+    transition: all 0.8s;
+}
     @media only screen and (max-width: 575px) {
       .dz-shop-card.style-2 {
         display: block; } }
@@ -24831,3 +24832,6 @@ footer {
   transition: none; }
 
 /*# sourceMappingURL=style.map */
+.dz-shop-card {
+    justify-content: space-around !important;
+}
