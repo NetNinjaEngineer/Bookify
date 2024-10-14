@@ -37,17 +37,17 @@ public class WishlistService : IWishlistService
 		_wishlistRepo = wishlistRepo;
 	}
 
-	public async Task<Result<int>> AddProductToWishlistOrRemoveItAsync(int productId)
+	public async Task<(Result<int>, bool)> AddProductToWishlistOrRemoveItAsync(int productId)
 	{
 		var authenticatedUserResult = await CheckIfUserIsAuthenticatedAsync(_userService.UserEmail);
 
 		if (authenticatedUserResult.IsFailure)
-			return Result<int>.Fail(authenticatedUserResult.Error);
+			return (Result<int>.Fail(authenticatedUserResult.Error), false);
 
 		var productExistsResult = await CheckIfProductExistsAsync(productId);
 
 		if (productExistsResult.IsFailure)
-			return Result<int>.Fail(productExistsResult.Error);
+			return (Result<int>.Fail(productExistsResult.Error), false);
 
 		var specification = new GetWishlistByUserIdSpecification(authenticatedUserResult.Value.Id);
 
@@ -62,7 +62,7 @@ public class WishlistService : IWishlistService
 			await RemoveProductFromWishlist(productId);
 
 			// get removed id
-			return Result<int>.Ok(existedWishlistItem.BookId);
+			return (Result<int>.Ok(existedWishlistItem.BookId), false);
 		}
 
 		WishlistItem wishlistItem;
@@ -71,7 +71,7 @@ public class WishlistService : IWishlistService
 		{
 			wishlistItem = AddWishlistItem(productExistsResult.Value, customerWishlist);
 
-			return Result<int>.Ok(wishlistItem.BookId);
+			return (Result<int>.Ok(wishlistItem.BookId), true);
 		}
 
 		var createdWishlistIdResult = await CreateUserWishlistAsync(_userService.UserEmail);
@@ -84,7 +84,7 @@ public class WishlistService : IWishlistService
 			// check creation if its null
 
 			if (createdWishlist is null)
-				return Result<int>.Fail("Error while creating wishlist.");
+				return (Result<int>.Fail("Error while creating wishlist."), false);
 
 			wishlistItem = AddWishlistItem(productExistsResult.Value, createdWishlist);
 
@@ -92,10 +92,10 @@ public class WishlistService : IWishlistService
 
 			await _wishlistRepository.CommitAsync();
 
-			return Result<int>.Ok(wishlistItem.BookId);
+			return (Result<int>.Ok(wishlistItem.BookId), true);
 		}
 
-		return Result<int>.Fail("Error while creating wishlist.");
+		return (Result<int>.Fail("Error while creating wishlist."), false);
 
 	}
 

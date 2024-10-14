@@ -54,10 +54,15 @@
 										<button type="submit" class="btn btn-primary btnhover btnhover2"><i class="flaticon-shopping-cart-1"></i> <span>Add to cart</span></button>
 									</form>
 									<div class="bookmark-btn style-1 d-none d-sm-block">
-										<input class="form-check-input" type="checkbox" id="flexCheckDefault1">
-										<label class="form-check-label" for="flexCheckDefault1">
-											<i class="flaticon-heart"></i>
-										</label>
+										<form asp-action="AddProductToWishlist" asp-controller="Wishlist" method="post">
+											<input type="hidden" name="productId" value="@Model.Id" />
+											<button type="submit" style="outline: none; border: none">
+												<input class="form-check-input" type="checkbox" id="flexCheckDefault1">
+												<label class="form-check-label" for="flexCheckDefault1">
+													<i class="fa-solid fa-heart"></i>
+												</label>
+											</button>
+										</form>
 									</div>
 								</div>
 							</div>

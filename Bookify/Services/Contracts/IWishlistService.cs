@@ -5,9 +5,9 @@ namespace Bookify.Services.Contracts;
 
 public interface IWishlistService
 {
-    Task<Result<int>> AddProductToWishlistOrRemoveItAsync(int productId);
-    Task<Result<int>> CreateUserWishlistAsync(string customerEmail);
-    Task<Result> RemoveProductFromWishlist(int productId);
-    Task<Result<WishlistForListVM>> GetUserWishlistAsync();
-    Task<Result<int>> GetUserWishlistItemsCountAsync();
+	Task<(Result<int>, bool)> AddProductToWishlistOrRemoveItAsync(int productId);
+	Task<Result<int>> CreateUserWishlistAsync(string customerEmail);
+	Task<Result> RemoveProductFromWishlist(int productId);
+	Task<Result<WishlistForListVM>> GetUserWishlistAsync();
+	Task<Result<int>> GetUserWishlistItemsCountAsync();
 }

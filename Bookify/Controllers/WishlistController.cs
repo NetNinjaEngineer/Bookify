@@ -1,30 +1,50 @@
-﻿using Bookify.Services.Contracts;
+﻿using AspNetCoreHero.ToastNotification.Abstractions;
+using Bookify.Services.Contracts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bookify.Controllers;
 [Authorize]
 public class WishlistController(
-    IWishlistService wishlistService,
-    ILogger<WishlistController> logger) : Controller
+	IWishlistService wishlistService,
+	ILogger<WishlistController> logger,
+	INotyfService notyfService) : Controller
 {
-    private readonly IWishlistService _wishlistService = wishlistService;
-    private readonly ILogger<WishlistController> _logger = logger;
+	private readonly IWishlistService _wishlistService = wishlistService;
+	private readonly ILogger<WishlistController> _logger = logger;
+	private readonly INotyfService _notyfService = notyfService;
 
-    [HttpPost]
-    public async Task<IActionResult> AddProductToWishlist(int productId)
-    {
-        var idAddedOrRemoved = await _wishlistService.AddProductToWishlistOrRemoveItAsync(productId);
-        return RedirectToAction(nameof(Index));
-    }
+	[HttpPost]
+	public async Task<IActionResult> AddProductToWishlist(int productId)
+	{
+		var (idAddedOrRemovedResult, added) = await _wishlistService.AddProductToWishlistOrRemoveItAsync(productId);
 
-    public async Task<IActionResult> Index()
-    {
-        var userWishlist = await _wishlistService.GetUserWishlistAsync();
+		if (idAddedOrRemovedResult.IsSuccess)
+		{
+			if (added)
+			{
+				_notyfService.Success("Successfully added to your wishlist.");
+				return RedirectToAction("Index");
+			}
 
-        if (userWishlist.IsSuccess)
-            return View(userWishlist.Value);
+			_notyfService.Success("Removed from your wishlist.");
 
-        return View("EmptyWishlist");
-    }
+			return RedirectToAction("Details", "Books", new { id = productId });
+
+		}
+
+		_notyfService.Error(idAddedOrRemovedResult.Error);
+
+		return RedirectToAction("Details", "Books", new { id = productId });
+	}
+
+	public async Task<IActionResult> Index()
+	{
+		var userWishlist = await _wishlistService.GetUserWishlistAsync();
+
+		if (userWishlist.IsSuccess)
+			return View(userWishlist.Value);
+
+		return View("EmptyWishlist");
+	}
 }
