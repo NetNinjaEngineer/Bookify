@@ -4,6 +4,7 @@
 @inject IUserService userService
 @inject IReviewsService reviewsService
 @inject IConfiguration config
+@inject IBookService bookService
 
 @{
 	ViewData["Title"] = "Details";
@@ -12,6 +13,7 @@
 	var productsReviews = await reviewsService.GetReviewsAsync(Model.Id);
 	var pictureName = await userService.GetLoggedInUserPictureName() ?? "";
 	var ratingAverageValue = await reviewsService.GetAverageRatingForBookAsync(Model.Id);
+	var relatedBooks = await bookService.GetRelatedBooksAsync(Model.Id);
 
 }
 
@@ -21,7 +23,7 @@
 			<div class="col">
 				<div class="dz-box">
 					<div class="dz-media">
-						<img height="360" src="@Model.PictureUrl" alt="@Model.Title">
+						<img src="@Model.PictureUrl" alt="@Model.Title">
 					</div>
 					<div class="dz-content">
 						<div class="dz-header">
@@ -237,31 +239,54 @@
 			<div class="col-xl-4 mt-5 mt-xl-0">
 				<div class="widget">
 					<h4 class="widget-title">Related Books</h4>
-					<div class="row">
-
-						<div class="col-xl-12 col-lg-6">
-							<div class="dz-shop-card style-5">
-								<div class="dz-media">
-									<img src="images/books/grid/book15.jpg" alt="">
-								</div>
-								<div class="dz-content">
-									<h5 class="subtitle">Terrible Madness</h5>
-									<ul class="dz-tags">
-										<li>THRILLE,</li>
-										<li>DRAMA,</li>
-										<li>HORROR</li>
-									</ul>
-									<div class="price">
-										<span class="price-num">$45.4</span>
-										<del>$98.4</del>
+					<div class="row related-books-container">
+						@if (relatedBooks.Value.Any())
+						{
+							@foreach (var book in relatedBooks.Value)
+							{
+								<div class="col-xl-12 col-lg-6 mb-4">
+									<div class="related-book-card h-100 d-flex flex-row">
+										<!-- Image on the left -->
+										<div class="book-image">
+											<img src="@book.PictureUrl" alt="@book.Title" class="img-fluid" style="width: 100px; height: 150px; object-fit: cover;">
+										</div>
+										<!-- Book info on the right -->
+										<div class="book-info ms-4 d-flex flex-column justify-content-between">
+											<div>
+												<h5 class="subtitle fw-bold">
+													<a asp-action="Details" asp-controller="Books" asp-route-id="@book.Id" >@book.Title</a>
+												</h5>
+												<ul class="dz-tags list-unstyled mb-2">
+													@foreach (var tag in book.Tags)
+													{
+														<li class="badge bg-secondary me-1">@tag.TagName</li>
+													}
+												</ul>
+											</div>
+											<div>
+												<div class="price mb-2">
+													<span class="price-num fw-bold">@book.Price.ToString("C")</span>
+												</div>
+												<form asp-action="AddToBasket" asp-controller="ShoppingCart" method="post">
+													<input type="hidden" name="productId" value="@book.Id" />
+													<input type="hidden" name="quantity" value="1" />
+													<button type="submit" class="btn btn-outline-primary btn-sm btnhover btnhover2">
+														<i class="flaticon-shopping-cart-1 me-2"></i> Add to cart
+													</button>
+												</form>
+											</div>
+										</div>
 									</div>
-									<a href="shop-cart.html" class="btn btn-outline-primary btn-sm btnhover btnhover2"><i class="flaticon-shopping-cart-1 me-2"></i> Add to cart</a>
 								</div>
-							</div>
-						</div>
+							}
+						}
 					</div>
 				</div>
 			</div>
+
+
+
+
 		</div>
 	</div>
 </section>
