@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241011220438_UpdateDates")]
-    partial class UpdateDates
+    [Migration("20241015044743_MakePictureRequired")]
+    partial class MakePictureRequired
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -281,7 +281,13 @@ namespace Bookify.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("BookId")
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<int>("RatingValue")
                         .HasColumnType("int");
 
                     b.Property<string>("ReviewDescription")
@@ -297,9 +303,15 @@ namespace Bookify.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Reviews", (string)null);
                 });
@@ -372,6 +384,7 @@ namespace Bookify.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Picture")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SecurityStamp")
@@ -745,9 +758,18 @@ namespace Bookify.Migrations
                     b.HasOne("Bookify.Entities.Book", "Book")
                         .WithMany("Reviews")
                         .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Bookify.Entities.User", "User")
+                        .WithMany("Reviews")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Book");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Bookify.Entities.Wishlist", b =>
@@ -861,6 +883,11 @@ namespace Bookify.Migrations
             modelBuilder.Entity("Bookify.Entities.Tag", b =>
                 {
                     b.Navigation("BookTags");
+                });
+
+            modelBuilder.Entity("Bookify.Entities.User", b =>
+                {
+                    b.Navigation("Reviews");
                 });
 
             modelBuilder.Entity("Bookify.Entities.Wishlist", b =>

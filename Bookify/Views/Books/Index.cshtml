@@ -1,4 +1,6 @@
-﻿@model PaginationVM<BookForListVM>
+﻿@using Bookify.Services.Contracts
+@model PaginationVM<BookForListVM>
+@inject IReviewsService reviewsService
 
 @{
     ViewData["Title"] = "Books";
@@ -16,12 +18,12 @@
                 <div class="col-md-12 col-sm-12 mb-4">
                     <div class="dz-shop-card style-2 d-flex">
                         <!-- Image Section (45% width) -->
-                        <div class="dz-media" style="width: 30%;">
+                        <div class="dz-media" style="width: 25%;">
                             <img src="@book.PictureUrl" alt="@book.Title" class="img-fluid">
                         </div>
 
                         <!-- Content Section (55% width) -->
-                        <div class="dz-content" style="width: 70%;">
+                        <div class="dz-content" style="width: 75%;">
                             <div class="dz-header d-flex justify-content-between align-items-center">
                                 <div>
                                     <ul class="dz-tags">
@@ -52,15 +54,14 @@
                                         <a href="pricing.html" class="badge next-badge">See 2+ promos</a>
                                     </div>
                                     <div class="review-num">
-                                        <h4>4.0</h4>
+                                        <h4>@((await reviewsService.GetAverageRatingForBookAsync(book.Id)).Value)</h4>
                                         <ul class="dz-rating">
-                                            <li><i class="flaticon-star text-yellow"></i></li>
-                                            <li><i class="flaticon-star text-yellow"></i></li>
-                                            <li><i class="flaticon-star text-yellow"></i></li>
-                                            <li><i class="flaticon-star text-yellow"></i></li>
-                                            <li><i class="flaticon-star text-muted"></i></li>
+                                            @for (int i = 1; i <= (await reviewsService.GetAverageRatingForBookAsync(book.Id)).Value; i++)
+                                            {
+                                                <li><i class="fa-solid fa-star text-yellow"></i></li>
+                                            }
                                         </ul>
-                                        <span><a href="javascript:void(0);"> 235 Reviews</a></span>
+                                        <span><a href="javascript:void(0);"> @book.Reviews.Count Reviews</a></span>
                                     </div>
                                 </div>
 

@@ -17,9 +17,15 @@ public class ReviewConfiguration : IEntityTypeConfiguration<Review>
 
 		builder.HasOne(x => x.Book)
 			.WithMany(x => x.Reviews)
-			.OnDelete(DeleteBehavior.SetNull)
+			.OnDelete(DeleteBehavior.Restrict)
 			.HasForeignKey(x => x.BookId)
-			.IsRequired(false);
+			.IsRequired();
+
+		builder.HasOne(x => x.User)
+			.WithMany(x => x.Reviews)
+			.HasForeignKey(x => x.UserId)
+			.OnDelete(deleteBehavior: DeleteBehavior.Cascade)
+			.IsRequired();
 
 		builder.ToTable("Reviews");
 	}

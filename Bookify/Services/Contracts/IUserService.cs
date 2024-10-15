@@ -2,5 +2,7 @@
 
 public interface IUserService
 {
-    string UserEmail { get; }
+	string UserEmail { get; }
+	Task<string> GetUserProfilePath();
+	Task<string> GetLoggedInUserPictureName();
 }

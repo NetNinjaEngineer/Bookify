@@ -7,34 +7,37 @@ namespace Bookify.Profiles;
 
 public class MappingProfile : Profile
 {
-    public MappingProfile()
-    {
-        CreateMap<BookForCreateVM, Book>();
+	public MappingProfile()
+	{
+		CreateMap<BookForCreateVM, Book>();
 
-        CreateMap<Genre, GenreForListVM>();
+		CreateMap<Genre, GenreForListVM>();
 
-        CreateMap<RegisterVM, User>();
+		CreateMap<RegisterVM, User>();
 
-        CreateMap<User, UserProfileVM>()
-            .ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<AppUserPictureUrlValueResolver>())
-            .ReverseMap();
+		CreateMap<User, UserProfileVM>()
+			.ForMember(dest => dest.PictureUrl, opt => opt.MapFrom<AppUserPictureUrlValueResolver>())
+			.ReverseMap();
 
-        CreateMap<WishlistItem, WishlistItemVM>()
-            .ForMember(dest => dest.ProductId, options => options.MapFrom(src => src.BookId))
-            .ForMember(dest => dest.ProductName, options => options.MapFrom(src => src.Book.Title))
-            .ForMember(dest => dest.Price, options => options.MapFrom(src => src.Book.Price))
-            .ForMember(dest => dest.ProductImageUrl, options => options.MapFrom<WishlistItemVMPictureUrlValueResolver>());
+		CreateMap<WishlistItem, WishlistItemVM>()
+			.ForMember(dest => dest.ProductId, options => options.MapFrom(src => src.BookId))
+			.ForMember(dest => dest.ProductName, options => options.MapFrom(src => src.Book.Title))
+			.ForMember(dest => dest.Price, options => options.MapFrom(src => src.Book.Price))
+			.ForMember(dest => dest.ProductImageUrl, options => options.MapFrom<WishlistItemVMPictureUrlValueResolver>());
 
-        CreateMap<Wishlist, WishlistForListVM>()
-            .ForMember(dest => dest.WishlistId, options => options.MapFrom(src => src.Id))
-            .ForMember(dest => dest.WishlistItemVMs, options => options.MapFrom(src => src.WishlistItems));
+		CreateMap<Wishlist, WishlistForListVM>()
+			.ForMember(dest => dest.WishlistId, options => options.MapFrom(src => src.Id))
+			.ForMember(dest => dest.WishlistItemVMs, options => options.MapFrom(src => src.WishlistItems));
 
-        CreateMap<Tag, TagVM>();
+		CreateMap<Tag, TagVM>();
 
-        CreateMap<Book, BookForListVM>()
-            .ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author!.FullName))
-            .ForMember(dest => dest.Genre, opt => opt.MapFrom(src => src.Genre!.GenreName))
-            .ForMember(dest => dest.PictureUrl, src => src.MapFrom<BookPictureUrlValueResolver>())
-            .ForMember(dest => dest.Publisher, opt => opt.MapFrom(src => src.Publisher!.PublisherName));
-    }
+		CreateMap<Book, BookForListVM>()
+			.ForMember(dest => dest.Author, opt => opt.MapFrom(src => src.Author!.FullName))
+			.ForMember(dest => dest.Genre, opt => opt.MapFrom(src => src.Genre!.GenreName))
+			.ForMember(dest => dest.PictureUrl, src => src.MapFrom<BookPictureUrlValueResolver>())
+			.ForMember(dest => dest.Publisher, opt => opt.MapFrom(src => src.Publisher!.PublisherName));
+
+		CreateMap<Review, ReviewListViewModel>()
+			.ForMember(dest => dest.ReviewerPictureUrl, opt => opt.MapFrom<ReviewPictureUrlValueResolver>());
+	}
 }

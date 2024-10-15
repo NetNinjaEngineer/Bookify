@@ -1,7 +1,18 @@
-﻿@model BookForListVM
+﻿@using Bookify.Services.Contracts
+@using System.Security.Claims
+@model BookForListVM
+@inject IUserService userService
+@inject IReviewsService reviewsService
+@inject IConfiguration config
 
 @{
-    ViewData["Title"] = "Details";
+	ViewData["Title"] = "Details";
+
+	var userFullName = User.FindFirst("FullName")!.Value;
+	var productsReviews = await reviewsService.GetReviewsAsync(Model.Id);
+	var pictureName = await userService.GetLoggedInUserPictureName() ?? "";
+	var ratingAverageValue = await reviewsService.GetAverageRatingForBookAsync(Model.Id);
+
 }
 
 <section class="content-inner-1">
@@ -15,18 +26,20 @@
 					<div class="dz-content">
 						<div class="dz-header">
 							<h3 class="title">@Model.Title</h3>
-							<div class="shop-item-rating">
-								<div class="d-lg-flex d-sm-inline-flex d-flex align-items-center">
-									<ul class="dz-rating">
-										<li><i class="fa-solid fa-star text-yellow"></i></li>
-										<li><i class="fa-solid fa-star text-yellow"></i></li>
-										<li><i class="fa-solid fa-star text-yellow"></i></li>
-										<li><i class="fa-solid fa-star text-yellow"></i></li>
-										<li><i class="fa-solid fa-star text-muted"></i></li>
-									</ul>
-									<h6 class="m-b0">4.0</h6>
+							@if (ratingAverageValue.Value > 0)
+							{
+								<div class="shop-item-rating">
+									<div class="d-lg-flex d-sm-inline-flex d-flex align-items-center">
+										<ul class="dz-rating">
+											@for (int i = 1; i <= @ratingAverageValue.Value; i++)
+											{
+												<li><i class="fa-solid fa-star text-yellow"></i></li>
+											}
+										</ul>
+										<h6 class="m-b0">@ratingAverageValue.Value</h6>
+									</div>
 								</div>
-							</div>
+							}
 						</div>
 						<div class="dz-body">
 							<div class="book-detail">
@@ -80,6 +93,7 @@
 						<li><a data-bs-toggle="tab" href="#developement-1">Customer Reviews</a></li>
 					</ul>
 					<div class="tab-content">
+
 						<div id="graphic-design-1" class="tab-pane show active">
 							<table class="table border book-overview">
 								<tr>
@@ -132,110 +146,99 @@
 								}
 							</table>
 						</div>
+
+
 						<div id="developement-1" class="tab-pane">
 							<div class="clear" id="comment-list">
 								<div class="post-comments comments-area style-1 clearfix">
-									<h4 class="comments-title">4 COMMENTS</h4>
-									<div id="comment">
-										<ol class="comment-list">
-											<li class="comment even thread-even depth-1 comment" id="comment-2">
-												<div class="comment-body">
-													<div class="comment-author vcard">
-														<img src="images/profile4.jpg" alt="" class="avatar" />
-														<cite class="fn">Michel Poe</cite> <span class="says">says:</span>
-														<div class="comment-meta">
-															<a href="javascript:void(0);">December 28, 2022 at 6:14 am</a>
-														</div>
-													</div>
-													<div class="comment-content dlab-page-text">
-														<p>Donec suscipit porta lorem eget condimentum. Morbi vitae mauris in leo venenatis varius. Aliquam nunc enim, egestas ac dui in, aliquam vulputate erat.</p>
-													</div>
-													<div class="reply">
-														<a rel="nofollow" class="comment-reply-link" href="javascript:void(0);"><i class="fa fa-reply"></i> Reply</a>
-													</div>
-												</div>
-												<ol class="children">
-													<li class="comment byuser comment-author-w3itexpertsuser bypostauthor odd alt depth-2 comment" id="comment-3">
-														<div class="comment-body" id="div-comment-3">
-															<div class="comment-author vcard">
-																<img src="images/profile3.jpg" alt="" class="avatar" />
-																<cite class="fn">Celesto Anderson</cite> <span class="says">says:</span>
-																<div class="comment-meta">
-																	<a href="javascript:void(0);">December 28, 2022 at 6:14 am</a>
+
+									@if(productsReviews.Value != null)
+									{
+										@if (productsReviews.Value.Any())
+										{
+
+											<h4 class="comments-title">@productsReviews.Value.Count() REVIEWS</h4>
+											<div id="comment">
+												<ol class="comment-list">
+
+												@foreach (var review in productsReviews.Value)
+												{
+														<li class="comment odd alt thread-even depth-1 comment" id="comment-5">
+															<div class="comment-body" id="div-comment-5">
+																<div class="comment-author vcard">
+																	<img src="@review.ReviewerPictureUrl" alt="@review.ReviewerName" class="avatar" />
+																	<cite class="fn">@review.ReviewerName</cite> <span class="says">says:</span>
+																	<p>@review.CreatedAt.ToString("MMMM dd, yyyy 'at' h:mm tt").ToLower()</p>
+																</div>
+																<div class="comment-content dlab-page-text">
+																	<p>@review.ReviewDescription</p>
 																</div>
 															</div>
-															<div class="comment-content dlab-page-text">
-																<p>Donec suscipit porta lorem eget condimentum. Morbi vitae mauris in leo venenatis varius. Aliquam nunc enim, egestas ac dui in, aliquam vulputate erat.</p>
-															</div>
-															<div class="reply">
-																<a class="comment-reply-link" href="javascript:void(0);"><i class="fa fa-reply"></i> Reply</a>
-															</div>
-														</div>
-													</li>
+														</li>
+												}
+
 												</ol>
-											</li>
-											<li class="comment even thread-odd thread-alt depth-1 comment" id="comment-4">
-												<div class="comment-body" id="div-comment-4">
-													<div class="comment-author vcard">
-														<img src="images/profile2.jpg" alt="" class="avatar" />
-														<cite class="fn">Ryan</cite> <span class="says">says:</span>
-														<div class="comment-meta">
-															<a href="javascript:void(0);">December 28, 2022 at 6:14 am</a>
-														</div>
-													</div>
-													<div class="comment-content dlab-page-text">
-														<p>Donec suscipit porta lorem eget condimentum. Morbi vitae mauris in leo venenatis varius. Aliquam nunc enim, egestas ac dui in, aliquam vulputate erat.</p>
-													</div>
-													<div class="reply">
-														<a class="comment-reply-link" href="javascript:void(0);"><i class="fa fa-reply"></i> Reply</a>
-													</div>
-												</div>
-											</li>
-											<li class="comment odd alt thread-even depth-1 comment" id="comment-5">
-												<div class="comment-body" id="div-comment-5">
-													<div class="comment-author vcard">
-														<img src="images/profile1.jpg" alt="" class="avatar" />
-														<cite class="fn">Stuart</cite> <span class="says">says:</span>
-														<div class="comment-meta">
-															<a href="javascript:void(0);">December 28, 2022 at 6:14 am</a>
-														</div>
-													</div>
-													<div class="comment-content dlab-page-text">
-														<p>Donec suscipit porta lorem eget condimentum. Morbi vitae mauris in leo venenatis varius. Aliquam nunc enim, egestas ac dui in, aliquam vulputate erat.</p>
-													</div>
-													<div class="reply">
-														<a rel="nofollow" class="comment-reply-link" href="javascript:void(0);"><i class="fa fa-reply"></i> Reply</a>
-													</div>
-												</div>
-											</li>
-										</ol>
-									</div>
+											</div>
+										}										
+									}
+									else
+									{
+										<p>No reviews yet. Be the first to review this book!</p>
+									}
+
 									<div class="default-form comment-respond style-1" id="respond">
-										<h4 class="comment-reply-title" id="reply-title">LEAVE A REPLY <small> <a rel="nofollow" id="cancel-comment-reply-link" href="javascript:void(0)" style="display:none;">Cancel reply</a> </small></h4>
+										<h4 class="comment-reply-title" id="reply-title">LEAVE A REVIEW <small> <a rel="nofollow" id="cancel-comment-reply-link" href="javascript:void(0)" style="display:none;">Cancel reply</a> </small></h4>
 										<div class="clearfix">
-											<form method="post" id="comments_form" class="comment-form" novalidate>
-												<p class="comment-form-author"><input id="name" placeholder="Author" name="author" type="text" value=""></p>
-												<p class="comment-form-email"><input id="email" required="required" placeholder="Email" name="email" type="email" value=""></p>
-												<p class="comment-form-comment"><textarea id="comments" placeholder="Type Comment Here" class="form-control4" name="comment" cols="45" rows="3" required="required"></textarea></p>
+
+											<form method="post"  class="comment-form" asp-action="CreateOrUpdateReview" asp-controller="Reviews" >
+												 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+												<input type="hidden" asp-for="CreateReviewViewModel.BookId"  value="@Model.Id" />
+												<input type="hidden" asp-for="CreateReviewViewModel.UserEmail" value="@userService.UserEmail" />
+												<input type="hidden" asp-for="CreateReviewViewModel.ReviewerName" value="@userFullName" />
+												<input type="hidden" asp-for="CreateReviewViewModel.ReviewerPictureName" value="@pictureName" />
+										
+												<div class="comment-form-comment">
+													<label for="RatingValue">Your Rating</label>
+													<select asp-for="CreateReviewViewModel.RatingValue" class="form-control">
+														<option value="">Select Rating</option>
+														<option value="1">1 - Poor</option>
+														<option value="2">2 - Fair</option>
+														<option value="3">3 - Good</option>
+														<option value="4">4 - Very Good</option>
+														<option value="5">5 - Excellent</option>
+													</select>
+													<span asp-validation-for="CreateReviewViewModel.RatingValue" class="text-danger"></span>
+												</div>
+
+												<p class="comment-form-comment">
+													<textarea asp-for="@Model.CreateReviewViewModel.ReviewDescription" placeholder="Type Comment Here" class="form-control4"  cols="45" rows="3" required="required"></textarea>
+													<span asp-validation-for="CreateReviewViewModel.ReviewDescription" class="text-danger"></span>
+												</p>
 												<p class="col-md-12 col-sm-12 col-xs-12 form-submit">
 													<button id="submit" type="submit" class="submit btn btn-primary filled">
 														Submit Now <i class="fa fa-angle-right m-l10"></i>
 													</button>
 												</p>
 											</form>
+
 										</div>
 									</div>
 								</div>
 							</div>
 
 						</div>
+
+
 					</div>
 				</div>
 			</div>
-		@* 	<div class="col-xl-4 mt-5 mt-xl-0">
+
+
+			<div class="col-xl-4 mt-5 mt-xl-0">
 				<div class="widget">
 					<h4 class="widget-title">Related Books</h4>
 					<div class="row">
+
 						<div class="col-xl-12 col-lg-6">
 							<div class="dz-shop-card style-5">
 								<div class="dz-media">
@@ -256,64 +259,9 @@
 								</div>
 							</div>
 						</div>
-						<div class="col-xl-12 col-lg-6">
-							<div class="dz-shop-card style-5">
-								<div class="dz-media">
-									<img src="images/books/grid/book3.jpg" alt="">
-								</div>
-								<div class="dz-content">
-									<h5 class="subtitle">Battle Drive</h5>
-									<ul class="dz-tags">
-										<li>THRILLE,</li>
-										<li>DRAMA,</li>
-										<li>HORROR</li>
-									</ul>
-									<div class="price">
-										<span class="price-num">$45.4</span>
-										<del>$98.4</del>
-									</div>
-									<a href="shop-cart.html" class="btn btn-outline-primary btn-sm btnhover btnhover2"><i class="flaticon-shopping-cart-1 me-2"></i> Add to cart</a>
-								</div>
-							</div>
-						</div>
-						<div class="col-xl-12 col-lg-6">
-							<div class="dz-shop-card style-5 mb-0">
-								<div class="dz-media">
-									<img src="images/books/grid/book5.jpg" alt="">
-								</div>
-								<div class="dz-content">
-									<h5 class="subtitle">Terrible Madness</h5>
-									<ul class="dz-tags">
-										<li>THRILLE,</li>
-										<li>DRAMA,</li>
-										<li>HORROR</li>
-									</ul>
-									<div class="price">
-										<span class="price-num">$45.4</span>
-										<del>$98.4</del>
-									</div>
-									<a href="shop-cart.html" class="btn btn-outline-primary btn-sm btnhover btnhover2"><i class="flaticon-shopping-cart-1 me-2"></i> Add to cart</a>
-								</div>
-							</div>
-						</div>
 					</div>
 				</div>
-			</div> *@
+			</div>
 		</div>
 	</div>
 </section>
-
-
-
-@* 
-<div class="card Model-card mb-4">
-    <img src="@Model.PictureUrl" class="card-img-top" alt="@Model.Title">
-    <div class="card-body">
-        <h5 class="card-title">@Model.Title</h5>
-        <p class="card-text text-muted">@Model.Author - @Model.Genre</p>
-        <p class="card-description">@Model.Description</p>
-        <div class="price-section">
-            <span class="Model-price">@Model.Price.ToString("C")</span>
-        </div>
-    </div>
-</div> *@
