@@ -1,17 +1,43 @@
-﻿@{
+﻿@using System.Collections.Generic
+@model IEnumerable<Genre>
+
+@{
     ViewData["Title"] = "Genres";
 }
 
-<section class="mx-auto mt-3">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-3">
-                <div class="card">
-                    <div class="card-body">
-                        Test Genre
+<section class="container mt-5">
+    <div class="row justify-content-center">
+        @foreach (var genre in Model)
+        {
+            <div class="col-lg-2 col-md-3 col-sm-4 col-6 mb-4">
+                <div class="card border-2 shadow-sm genre-card text-center h-100">
+                    <div class="card-body d-flex align-items-center justify-content-center">
+                        <a asp-action="GetBooksWithRelatedGenre" asp-controller="Home" asp-route-id="@(genre.Id)">
+                            <h5 class="card-title mb-0">@genre.GenreName</h5>
+                        </a>
                     </div>
                 </div>
             </div>
-        </div>
+        }
     </div>
 </section>
+
+<style>
+    .genre-card {
+        border-radius: 10px;
+        transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+
+        .genre-card:hover {
+            transform: translateY(-5px);
+            border: 1px solid #F28C28;
+            box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+    .card-title {
+        font-size: 1.1rem;
+        color: #2c3e50;
+        font-weight: bold;
+    }
+</style>

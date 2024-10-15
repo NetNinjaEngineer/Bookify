@@ -5,5 +5,6 @@ namespace Bookify.Services.Contracts;
 
 public interface IBookService
 {
-    Task<Result<IEnumerable<BookForListVM>>> GetRelatedBooksAsync(int bookId);
+	Task<Result<IEnumerable<BookForListVM>>> GetRelatedBooksAsync(int bookId);
+	Task<IEnumerable<BooksOnSaleViewModel>> GetOnSaleBooks();
 }

@@ -1,12 +1,14 @@
 ﻿@using Bookify.Services.Contracts
 @model IEnumerable<BookForListVM>
 @inject IReviewsService reviewService
+@inject IBookService bookService
 
 @{
 	ViewData["Title"] = "Home Page";
 	var allGenres = (IEnumerable<Genre>)ViewBag.AllGenres;
 	var shoppingCart = (ShoppingCart)ViewBag.ShoppingCart;
 	var reviewsResult = await reviewService.GetAllReviewsAsync();
+	var OnSaleBooks = await bookService.GetOnSaleBooks();
 }
 
 <!--Swiper Banner Start -->
@@ -388,6 +390,58 @@
 			</div>
 		</div>
 
+	</div>
+</section>
+
+<section class="content-inner-1">
+	<div class="container">
+		<div class="section-head book-align">
+			<h2 class="title mb-0">Books on Sale</h2>
+			<div class="pagination-align style-1">
+				<div class="swiper-button-prev" tabindex="0" role="button" aria-label="Previous slide" aria-controls="swiper-wrapper-c6bc724998b5546b"><i class="fa-solid fa-angle-left"></i></div>
+				<div class="swiper-pagination-two swiper-pagination-bullets"><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet"></span><span class="swiper-pagination-bullet swiper-pagination-bullet-active"></span><span class="swiper-pagination-bullet"></span></div>
+				<div class="swiper-button-next" tabindex="0" role="button" aria-label="Next slide" aria-controls="swiper-wrapper-c6bc724998b5546b"><i class="fa-solid fa-angle-right"></i></div>
+			</div>
+		</div>
+		<div class="swiper-container  swiper-four swiper-container-initialized swiper-container-horizontal swiper-container-pointer-events">
+			<div class="swiper-wrapper" id="swiper-wrapper-c6bc724998b5546b" aria-live="off" style="transform: translate3d(-2160px, 0px, 0px); transition-duration: 300ms;">
+			
+				
+				@foreach (var product in OnSaleBooks)
+				{
+					<div class="swiper-slide" data-swiper-slide-index="1" style="width: 210px; margin-right: 30px;" role="group" aria-label="1 / 16">
+						<div class="books-card  wow fadeInUp" data-wow-delay="0.2s" style="visibility: visible; animation-delay: 0.2s; animation-name: fadeInUp;">
+							<div class="dz-media">
+								<img src=@(product.PictureUrl) alt="@(product.Title)">
+							</div>
+							<div class="dz-content">
+								<h5 class="title"><a href="books-grid-view.html">@(product.Title)</a></h5>
+								<ul class="dz-tags">
+									@foreach (var tag in product.Tags)
+									{
+										<li><a href="#">@(tag),</a></li>
+									}
+								</ul>
+								<div class="book-footer">
+									<div class="rate">
+										<i class="fa-solid fa-star text-yellow"></i>@(Math.Round(product.Rating, 1))
+									</div>
+									<div class="price">
+										<span class="price-num">@(product.Price.ToString("C"))</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				}
+
+			
+
+
+
+			</div>
+			<span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+		</div>
 	</div>
 </section>
 
