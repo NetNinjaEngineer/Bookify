@@ -47,4 +47,19 @@ public class WishlistController(
 
 		return View("EmptyWishlist");
 	}
+
+	[HttpPost]
+	[ValidateAntiForgeryToken]
+	public async Task<IActionResult> RemoveProductFromWishlist(int productId)
+	{
+		var removedResult = await _wishlistService.RemoveProductFromWishlist(productId);
+		if (removedResult.IsSuccess)
+		{
+			_notyfService.Success("Removed Successfully from your wishlist.");
+			return RedirectToAction("Index");
+		}
+
+		_notyfService.Error(removedResult.Error);
+		return RedirectToAction(nameof(Index));
+	}
 }

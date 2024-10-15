@@ -34,7 +34,7 @@
 									<th>Product name</th>
 									<th>Unit Price</th>
 									<th>Add to cart </th>
-									<th>Close</th>
+									<th>Remove</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -51,7 +51,12 @@
 												<button type="submit" class="btn btn-primary btnhover">Add To Cart</button>
 											</form>
 										</td>
-										<td class="product-item-close"><a href="javascript:void(0);" class="ti-close"></a></td>
+										<td class="product-item-close">
+											<form asp-action="RemoveProductFromWishlist" asp-controller="Wishlist" method="post">
+												<input type="hidden" name="productId" value="@item.ProductId" />
+												<button type="submit" class="btn btn-danger">&times;</button>
+											</form>
+										</td>
 									</tr>
 								}
 							</tbody>

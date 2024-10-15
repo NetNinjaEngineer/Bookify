@@ -64,6 +64,13 @@ public class ReviewsService(
 		}
 	}
 
+	public async Task<Result<IEnumerable<ReviewListViewModel>>> GetAllReviewsAsync()
+	{
+		var allReviews = await reviewsRepository.GetAllAsync();
+		var mappedReviews = mapper.Map<IEnumerable<ReviewListViewModel>>(allReviews);
+		return Result<IEnumerable<ReviewListViewModel>>.Ok(mappedReviews);
+	}
+
 	public async Task<Result<double>> GetAverageRatingForBookAsync(int bookId)
 	{
 		var specification = new GetSingleBookWithRelatedDataSpecification(bookId);

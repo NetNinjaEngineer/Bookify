@@ -11,4 +11,6 @@ public interface IReviewsService
 
 	Task<Result<double>> GetAverageRatingForBookAsync(int bookId);
 
+	Task<Result<IEnumerable<ReviewListViewModel>>> GetAllReviewsAsync();
+
 }
