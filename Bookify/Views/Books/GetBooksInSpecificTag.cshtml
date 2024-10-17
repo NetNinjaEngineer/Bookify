@@ -1,0 +1,127 @@
+﻿@model IEnumerable<BookForListVM>
+@{
+    ViewData["Title"] = "Books In Tags";
+}
+
+
+<section class="book-list mx-auto mt-4">
+    <div class="container">
+        <div class="row">
+            @foreach (var book in Model)
+            {
+                <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm book-card">
+                        <div class="card-image">
+                            <img src="@book.PictureUrl" class="img-fluid" alt="@book.Title" />
+                            <div class="wishlist-icon">
+                                <form asp-action="AddProductToWishlist" asp-controller="Wishlist" method="post">
+                                    <input type="hidden" name="productId" value="@book.Id" />
+                                    <button type="submit" style="outline: none; border: none; background-color: white">
+                                        <i class="fa fa-heart-o"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="card-body text-center">
+                            <h5 class="book-title">@book.Title</h5>
+                            <p class="book-genre text-muted">@book.Genre</p>
+                            <p class="book-price">
+                                <span class="current-price">$@book.Price</span>
+                            </p>
+                            <div class="rating">
+                                <i class="fa fa-star text-warning"></i>
+                                <i class="fa fa-star text-warning"></i>
+                                <i class="fa fa-star text-warning"></i>
+                                <i class="fa fa-star text-warning"></i>
+                                <i class="fa fa-star text-warning"></i>
+                            </div>
+                            <form asp-action="AddToBasket" method="post" asp-controller="ShoppingCart">
+                                <input type="hidden" name="quantity" value="1" />
+                                <input type="hidden" name="productId" value="@book.Id" />
+                                <button class="btn btn-primary mt-2 add-to-cart">Add to Cart</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+
+<style>
+    .book-card {
+        border: 1px solid #ddd;
+        transition: transform 0.3s ease;
+    }
+
+        .book-card:hover {
+            transform: translateY(-10px);
+        }
+
+    .card-image {
+        position: relative;
+    }
+
+        .card-image img {
+            border-radius: 10px;
+            height: 300px;
+            object-fit: cover;
+        }
+
+    .wishlist-icon {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: white;
+        padding: 5px;
+        border-radius: 50%;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .book-title {
+        font-weight: bold;
+        margin: 15px 0 10px;
+        font-size: 1.2rem;
+        color: #2c3e50;
+    }
+
+    .book-genre {
+        font-size: 0.9rem;
+        color: #7f8c8d;
+    }
+
+    .book-price {
+        margin: 10px 0;
+    }
+
+    .current-price {
+        font-size: 1.5rem;
+        color: #e67e22;
+        font-weight: bold;
+    }
+
+    .original-price {
+        font-size: 1rem;
+        color: #95a5a6;
+        text-decoration: line-through;
+        margin-left: 10px;
+    }
+
+    .rating i {
+        margin-right: 3px;
+    }
+
+    .add-to-cart {
+        background-color: #2c3e50;
+        border: none;
+        width: 100%;
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+        .add-to-cart:hover {
+            background-color: #e67e22;
+        }
+
+</style>

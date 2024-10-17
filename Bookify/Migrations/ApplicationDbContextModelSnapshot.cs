@@ -42,7 +42,7 @@ namespace Bookify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Authors");
+                    b.ToTable("Authors", (string)null);
                 });
 
             modelBuilder.Entity("Bookify.Entities.Book", b =>
@@ -251,7 +251,7 @@ namespace Bookify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Publishers");
+                    b.ToTable("Publishers", (string)null);
                 });
 
             modelBuilder.Entity("Bookify.Entities.Return", b =>
@@ -270,7 +270,7 @@ namespace Bookify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Returns");
+                    b.ToTable("Returns", (string)null);
                 });
 
             modelBuilder.Entity("Bookify.Entities.Review", b =>
@@ -647,7 +647,7 @@ namespace Bookify.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsOne("Bookify.Entities.OrderAggregate.ShippingAddress", "ShippingAddress", b1 =>
+                    b.OwnsOne("Bookify.Entities.OrderAggregate.Order.ShippingAddress#Bookify.Entities.OrderAggregate.ShippingAddress", "ShippingAddress", b1 =>
                         {
                             b1.Property<int>("OrderId")
                                 .HasColumnType("int");
@@ -702,7 +702,7 @@ namespace Bookify.Migrations
 
                             b1.HasKey("OrderId");
 
-                            b1.ToTable("Orders");
+                            b1.ToTable("Orders", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
@@ -722,7 +722,7 @@ namespace Bookify.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.OwnsOne("Bookify.Entities.OrderAggregate.ProductItemOrdered", "ProductItemOrdered", b1 =>
+                    b.OwnsOne("Bookify.Entities.OrderAggregate.OrderItem.ProductItemOrdered#Bookify.Entities.OrderAggregate.ProductItemOrdered", "ProductItemOrdered", b1 =>
                         {
                             b1.Property<int>("OrderItemId")
                                 .HasColumnType("int");
@@ -743,7 +743,7 @@ namespace Bookify.Migrations
 
                             b1.HasKey("OrderItemId");
 
-                            b1.ToTable("OrderItems");
+                            b1.ToTable("OrderItems", (string)null);
 
                             b1.WithOwner()
                                 .HasForeignKey("OrderItemId");

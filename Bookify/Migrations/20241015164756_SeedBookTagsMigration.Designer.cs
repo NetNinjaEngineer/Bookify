@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241015151431_Seed50BooksData")]
-    partial class Seed50BooksData
+    [Migration("20241015164756_SeedBookTagsMigration")]
+    partial class SeedBookTagsMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

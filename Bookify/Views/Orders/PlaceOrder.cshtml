@@ -187,7 +187,10 @@
 					let productPrice = document.querySelector('.product-price-total');
 					productPrice.innerHTML = '';
 
-					productPrice.innerHTML = `${jsonData.cost + shoppingCartItemTotal}`;
+
+					const total = jsonData.cost + @(shoppingCartItemTotal)
+
+					productPrice.innerHTML = total;
 
 				})
 		});

@@ -8,6 +8,13 @@ namespace Bookify.Services;
 
 public class BookService(IBookRepository bookRepository, IMapper mapper) : IBookService
 {
+	public async Task<IEnumerable<BookForListVM>> GetBooksInSpecificTag(int tagId)
+	{
+		return mapper.Map<IEnumerable<BookForListVM>>(
+			await bookRepository.GetBooksByTagAsync(tagId)
+			);
+	}
+
 	public async Task<IEnumerable<BooksOnSaleViewModel>> GetOnSaleBooks()
 	{
 		return await bookRepository.GetAllBooksOnSaleAsync();

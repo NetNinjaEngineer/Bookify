@@ -83,6 +83,16 @@ builder.Services.AddNotyf(config =>
     config.Position = NotyfPosition.TopRight;
 });
 
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(nameof(EmailSettings)));
+
+builder.Services.AddTransient<IEmailService, EmailService>();
+
+builder.Services.AddHttpClient("StripeClient", options =>
+{
+    options.BaseAddress = new Uri("https://api.stripe.com");
+    options.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", stripeKeys.SecretKey);
+});
+
 var app = builder.Build();
 
 var scope = app.Services.CreateScope();

@@ -23,7 +23,7 @@
 			<div class="col">
 				<div class="dz-box">
 					<div class="dz-media">
-						<img src="@Model.PictureUrl" alt="@Model.Title">
+						<img height="500" src="@Model.PictureUrl" alt="@Model.Title">
 					</div>
 					<div class="dz-content">
 						<div class="dz-header">
@@ -259,7 +259,11 @@
 												<ul class="dz-tags list-unstyled mb-2">
 													@foreach (var tag in book.Tags)
 													{
-														<li class="badge bg-secondary me-1">@tag.TagName</li>
+														<a asp-action="GetBooksInSpecificTag" asp-route-tagId="@(tag.Id)">
+															<li class="badge bg-secondary me-1">
+																	@tag.TagName
+															</li>
+														</a>
 													}
 												</ul>
 											</div>

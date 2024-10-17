@@ -1,4 +1,5 @@
-﻿using Bookify.Entities.OrderAggregate;
+﻿using AutoMapper;
+using Bookify.Entities.OrderAggregate;
 using Bookify.Repository.Contracts;
 using Bookify.Services.Contracts;
 using Bookify.ViewModels;
@@ -11,64 +12,72 @@ namespace Bookify.Controllers;
 [Authorize]
 public class OrdersController : Controller
 {
-	private readonly IOrderService _orderService;
-	private readonly IGenericRepository<DeliveryMethod> _deliveryMethodRepository;
-	private readonly IShoppingCartService _shoppingCartService;
+    private readonly IOrderService _orderService;
+    private readonly IGenericRepository<DeliveryMethod> _deliveryMethodRepository;
+    private readonly IShoppingCartService _shoppingCartService;
+    private readonly IUserService _userService;
+    private readonly IMapper _mapper;
 
-	public OrdersController(
-		IOrderService orderService,
-		IGenericRepository<DeliveryMethod> deliveryMethodRepository,
-		IShoppingCartService shoppingCartService)
-	{
-		_orderService = orderService;
-		_deliveryMethodRepository = deliveryMethodRepository;
-		_shoppingCartService = shoppingCartService;
-	}
+    public OrdersController(
+        IOrderService orderService,
+        IGenericRepository<DeliveryMethod> deliveryMethodRepository,
+        IShoppingCartService shoppingCartService,
+        IUserService userService,
+        IMapper mapper)
+    {
+        _orderService = orderService;
+        _deliveryMethodRepository = deliveryMethodRepository;
+        _shoppingCartService = shoppingCartService;
+        _userService = userService;
+        _mapper = mapper;
+    }
 
-	public IActionResult GetAllUserOrders()
-	{
-		return View();
-	}
+    public async Task<IActionResult> GetAllUserOrders()
+    {
+        var userOrders = await _orderService.GetUserOrdersAsync(_userService.UserEmail);
+        var mappedOrders = _mapper.Map<IEnumerable<OrderForListVM>>(userOrders);
+        return View(mappedOrders);
+    }
 
 
-	[HttpGet]
-	public async Task<IActionResult> PlaceOrder(Guid shoppingCartId)
-	{
-		// send shoppingCartId to PlaceOrder View
+    [HttpGet]
+    public async Task<IActionResult> PlaceOrder(Guid shoppingCartId)
+    {
+        // send shoppingCartId to PlaceOrder View
 
-		ViewBag.ShoppingCartId = shoppingCartId;
+        ViewBag.ShoppingCartId = shoppingCartId;
 
-		// load all delivery methods to PlaceOrder View
+        // load all delivery methods to PlaceOrder View
 
-		var deliveryMethods = new SelectList(
-			items: await _deliveryMethodRepository.GetAllAsync(),
-			dataValueField: "Id",
-			dataTextField: "Title"
-		);
+        var deliveryMethods = new SelectList(
+            items: await _deliveryMethodRepository.GetAllAsync(),
+            dataValueField: "Id",
+            dataTextField: "Title"
+        );
 
-		var shoppingCart = (await _shoppingCartService.GetBasketAsync(shoppingCartId)).Value;
+        var shoppingCart = (await _shoppingCartService.GetBasketAsync(shoppingCartId)).Value;
 
-		ViewBag.ShoppingCart = shoppingCart;
+        ViewBag.ShoppingCart = shoppingCart;
 
-		ViewBag.DeliveryMethods = deliveryMethods;
+        ViewBag.DeliveryMethods = deliveryMethods;
 
-		return View();
-	}
+        return View();
+    }
 
-	[HttpPost]
-	[ValidateAntiForgeryToken]
-	public async Task<IActionResult> PlaceOrder(CreateOrderRequestVM createOrderRequestVM)
-	{
-		if (!ModelState.IsValid)
-			return BadRequest(ModelState);
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PlaceOrder(CreateOrderRequestVM createOrderRequestVM)
+    {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
 
-		var createdOrder = await _orderService.CreateOrderAsync(createOrderRequestVM);
+        var createdOrder = await _orderService.CreateOrderAsync(createOrderRequestVM);
 
-		if (createdOrder == null)
-			return BadRequest("Unable to Create Order.");
+        if (createdOrder == null)
+            return BadRequest("Unable to Create Order.");
 
-		// order is created
+        // order is created
 
-		return RedirectToAction("Checkout", "Checkout", new { orderId = createdOrder.Id });
-	}
+        return RedirectToAction("Checkout", "Checkout", new { orderId = createdOrder.Id });
+    }
 }

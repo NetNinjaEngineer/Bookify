@@ -47,6 +47,35 @@ public class BookRepository(
 		return onSaleBooks;
 	}
 
+	public async Task<IEnumerable<Book>> GetBooksByTagAsync(int tagId)
+	{
+		var booksSpecificTag = await context.Books.Join(
+				context.BookTags,
+				book => book.Id,
+				bookTag => bookTag.BookId,
+				(book, bookTag) => new { book, bookTag })
+			.Join(
+				context.Tags,
+				combinedBookWithBookTags => combinedBookWithBookTags.bookTag.TagId,
+				tag => tag.Id,
+				(combinedBookWithBookTags, tag) => new { combinedBookWithBookTags, tag })
+			.Where(combined => combined.tag.Id == tagId)
+			.Select(booksSpecificTag => new Book
+			{
+				Id = booksSpecificTag.combinedBookWithBookTags.book.Id,
+				ImageName = booksSpecificTag.combinedBookWithBookTags.book.ImageName,
+				IsOnSale = booksSpecificTag.combinedBookWithBookTags.book.IsOnSale,
+				BookFormat = booksSpecificTag.combinedBookWithBookTags.book.BookFormat,
+				Description = booksSpecificTag.combinedBookWithBookTags.book.Description,
+				EditionLanguage = booksSpecificTag.combinedBookWithBookTags.book.EditionLanguage,
+				DatePublished = booksSpecificTag.combinedBookWithBookTags.book.DatePublished,
+				Price = booksSpecificTag.combinedBookWithBookTags.book.Price
+			}).ToListAsync();
+
+		return booksSpecificTag;
+
+	}
+
 	public async Task<IEnumerable<Book>> GetRelatedBooksAsync(int bookId)
 	{
 		var existedBook = await context.Books

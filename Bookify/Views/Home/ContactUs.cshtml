@@ -1,4 +1,6 @@
-﻿@{
+﻿@model ContactUsModel
+
+@{
 	ViewData["Title"] = "Contact Us";
 }
 
@@ -42,11 +44,11 @@
     <div class="contact-form">
         <p class="sub-title-form ">CONTACT US</p>
         <h2>Get In Touch With Us</h2>
-        <form action="#">
-            <input type="text" placeholder="Full Name" required>
-            <input type="email" placeholder="Email Address" required>
-            <input type="tel" placeholder="Phone No." required>
-            <textarea placeholder="Message" required></textarea>
+        <form asp-action="ContactUs" asp-controller="Home" method="post">
+            <input asp-for="FullName" type="text" placeholder="Full Name" required>
+            <input asp-for="Email" type="email" placeholder="Email Address" required>
+            <input asp-for="Phone" type="tel" placeholder="Phone No." required>
+            <textarea asp-for="Message" placeholder="Message" required></textarea>
             <button type="submit">Submit</button>
         </form>
     </div>

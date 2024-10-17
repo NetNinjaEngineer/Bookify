@@ -7,4 +7,5 @@ public interface IBookService
 {
 	Task<Result<IEnumerable<BookForListVM>>> GetRelatedBooksAsync(int bookId);
 	Task<IEnumerable<BooksOnSaleViewModel>> GetOnSaleBooks();
+	Task<IEnumerable<BookForListVM>> GetBooksInSpecificTag(int tagId);
 }

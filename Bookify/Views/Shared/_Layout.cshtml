@@ -55,7 +55,7 @@
     <link href="~/css/stylecontact.css" rel="stylesheet" />
     <link href="~/css/stylelogin.css" rel="stylesheet" />
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
+    <link href="~/css/orders.css" rel="stylesheet" />
 
 
 	<!-- GOOGLE FONTS-->
@@ -199,6 +199,8 @@
 								<li><a asp-action="Index" asp-controller="Books"><span>Books</span></a></li>
 
 								<li><a asp-action="Index" asp-controller="Genres"><span>Genres</span></a></li>
+								<li><a asp-action="Index" asp-controller="ShoppingCart"><span>ShoppingCart</span></a></li>
+								<li><a asp-action="Index" asp-controller="Wishlist"><span>Wishlist</span></a></li>
 
 								@if (!User.Identity!.IsAuthenticated)
 								{

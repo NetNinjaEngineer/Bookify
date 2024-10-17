@@ -1,5 +1,64 @@
-﻿
+﻿@using Bookify.Entities.OrderAggregate
+@model IEnumerable<OrderForListVM>
+
 @{
+    ViewData["Title"] = "User Orders";
 }
 
-get all user orders
+<h2 class="page-title">Your Orders</h2>
+
+@if (!Model.Any())
+{
+    <div class="no-orders">
+        <p>You have not placed any orders yet.</p>
+        <p>Start shopping now and discover amazing products!</p>
+        <a asp-action="Index" asp-controller="Books" class="btn shop-now-btn">Shop Now</a>
+    </div>
+}
+else
+{
+    <div class="orders-list">
+        @foreach (var order in Model)
+        {
+            <div class="order-card">
+                <h3 class="order-date">
+                    <i class="fas fa-calendar-alt"></i> Order placed on @order.CreatedAt.ToString("MMMM dd, yyyy")
+                </h3>
+
+                <p>
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Status:</strong> @order.OrderStatus
+                    @if (order.OrderStatus == OrderStatus.Paid)
+                    {
+                        <i class="fas fa-check-circle paid-icon" title="Paid"></i> <!-- Paid icon -->
+                    }
+                    else
+                    {
+                        <i class="fas fa-exclamation-circle pending-icon" title="Pending"></i> <!-- Pending icon -->
+                    }
+                </p>
+
+                <p><i class="fas fa-shipping-fast"></i> <strong>Delivery Method:</strong> @order.DeliveryMethod.ToString()</p>
+
+                <p><i class="fas fa-dollar-sign"></i> <strong>Total Amount:</strong> @order.TotalAmount.ToString("C")</p>
+
+                <p><i class="fas fa-envelope"></i> <strong>Customer Email:</strong> @order.CustomerEmail</p>
+
+                <h4><i class="fas fa-book"></i> Items:</h4>
+                <div class="order-items">
+                    @foreach (var item in order.OrderItems)
+                    {
+                        <div class="order-item">
+                            <img src="@item.ProductItemOrdered.PictureUrl" alt="@item.ProductItemOrdered.ProductName" class="product-img" />
+                            <div class="item-details">
+                                <strong>@item.ProductItemOrdered.ProductName</strong><br />
+                                Quantity: @item.Quantity <br />
+                                Unit Price: @item.UnitPrice.ToString("C")
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
