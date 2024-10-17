@@ -2,12 +2,14 @@
     ViewData["Title"] = "Success Payment";
 }
 
-<div class="success-container">
-    <div class="success-message">
-        <img src="~/Files/Images/success-paid.jpeg" alt="Success Icon" class="success-icon w-25">
-        <h1>Payment Successful!</h1>
-        <p>Thank you for your purchase. Your payment has been received successfully.</p>
-        <p>Order ID: <span id="order-id"></span></p>
-        <a href="/" class="home-button">Go to Home page</a>
-    </div>
+<h2 class="text-center">Payment Successful!</h2>
+<p class="text-center">Thank you for your purchase. Your Payment has been received successfully.</p>
+<div class="imag mb-4" style="width: 200px;  margin: 0 auto;">
+	<img src="~/Files/Images/success-paid.jpeg" style="border-radius:13px;" alt="" class="img-fluid" >
+</div>
+
+<div class="extra-cell text-center" >
+				
+	<a asp-action="Index" asp-controller="Home"  class="btn btn-primary btnhover ">
+		<i style="   margin-right: 12px;" class="fa-solid fa-house text-center"></i> Go to Home</a>	
 </div>
